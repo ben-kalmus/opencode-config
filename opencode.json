@@ -18,3 +18,23 @@
       }
     }
   },
+  "mcp": {
+    "code-indexer": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@zilliz/claude-context-mcp@latest"
+      ],
+      "environment": {
+        "EMBEDDING_PROVIDER": "OpenAI",
+        "EMBEDDING_MODEL": "nomic-embed-text-v2-moe",
+        "OPENAI_BASE_URL": "http://localhost:11434/v1",
+        "OPENAI_API_KEY": "local",
+        "MILVUS_ADDRESS": "127.0.0.1:19530",
+        "MILVUS_TOKEN": "local"
+      },
+      "enabled": true
+    }
+  }
+}
