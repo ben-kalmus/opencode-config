@@ -22,9 +22,7 @@
     "code-indexer": {
       "type": "local",
       "command": [
-        "npx",
-        "-y",
-        "@zilliz/claude-context-mcp@latest"
+        "claude-context-mcp"
       ],
       "environment": {
         "EMBEDDING_PROVIDER": "OpenAI",
@@ -34,6 +32,13 @@
         "MILVUS_ADDRESS": "127.0.0.1:19530",
         "MILVUS_TOKEN": "local"
       },
+      "enabled": true
+    },
+    "memory": {
+      "type": "local",
+      "command": [
+        "mcp-server-memory"
+      ],
       "enabled": true
     }
   }
