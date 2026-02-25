@@ -1,45 +1,102 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (local)",
-      "options": {
-        "baseURL": "http://localhost:11434/v1"
-      },
-      "models": {
-        "qwen2.5-coder:7b-extended": {
-          "name": "Qwen 2.5 Coder 7B Extended (local)",
-          "limit": {
-            "context": 65536,
-            "output": 16384
-          }
+    "$schema": "https://opencode.ai/config.json",
+    "provider": {
+        "algolia-enablers": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "Algolia Enablers",
+            "options": {
+                "baseURL": "https://inference.api.enablers.algolia.net/v1",
+                "apiKey": "{env:ENABLERS_JWT}"
+            },
+            "models": {
+                "large": {
+                    "name": "Large - MiniMax M2.5",
+                    "limit": {
+                        "context": 196000,
+                        "output": 32000
+                    }
+                },
+                "medium": {
+                    "name": "Medium - Qwen3 VL 30B (high throughput)",
+                    "limit": {
+                        "context": 256000,
+                        "output": 32000
+                    }
+                },
+                "vision": {
+                    "name": "Vision - Qwen3 VL 30B (multimodal)",
+                    "limit": {
+                        "context": 256000,
+                        "output": 32000
+                    }
+                },
+                "minimax-m2.5": {
+                    "name": "MiniMax M2.5 (direct model access)",
+                    "limit": {
+                        "context": 196000,
+                        "output": 32000
+                    }
+                },
+                "qwen3-vl-30b-fp8": {
+                    "name": "Qwen3 VL 30B FP8 (direct model access)",
+                    "limit": {
+                        "context": 256000,
+                        "output": 32000
+                    }
+                }
+            }
+        },
+        "ollama": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "Ollama (local)",
+            "options": {
+                "baseURL": "http://localhost:11434/v1"
+            },
+            "models": {
+                "qwen3:8b": {
+                    "limit": {
+                        "context": 131072,
+                        "output": 16384
+                    }
+                },
+                "qwen3:14b": {
+                    "limit": {
+                        "context": 65536,
+                        "output": 16384
+                    }
+                },
+                "qwen2.5-coder:7b-extended": {
+                    "name": "Qwen 2.5 Coder 7B Extended (local)",
+                    "limit": {
+                        "context": 65536,
+                        "output": 16384
+                    }
+                }
+            }
         }
-      }
-    }
-  },
-  "mcp": {
-    "code-indexer": {
-      "type": "local",
-      "command": [
-        "claude-context-mcp"
-      ],
-      "environment": {
-        "EMBEDDING_PROVIDER": "OpenAI",
-        "EMBEDDING_MODEL": "nomic-embed-text-v2-moe",
-        "OPENAI_BASE_URL": "http://localhost:11434/v1",
-        "OPENAI_API_KEY": "local",
-        "MILVUS_ADDRESS": "127.0.0.1:19530",
-        "MILVUS_TOKEN": "local"
-      },
-      "enabled": true
     },
-    "memory": {
-      "type": "local",
-      "command": [
-        "mcp-server-memory"
-      ],
-      "enabled": true
+    "mcp": {
+        "code-indexer": {
+            "type": "local",
+            "command": [
+                "claude-context-mcp"
+            ],
+            "environment": {
+                "EMBEDDING_PROVIDER": "OpenAI",
+                "EMBEDDING_MODEL": "nomic-embed-text-v2-moe",
+                "OPENAI_BASE_URL": "http://localhost:11434/v1",
+                "OPENAI_API_KEY": "local",
+                "MILVUS_ADDRESS": "127.0.0.1:19530",
+                "MILVUS_TOKEN": "local"
+            },
+            "enabled": true
+        },
+        "memory": {
+            "type": "local",
+            "command": [
+                "mcp-server-memory"
+            ],
+            "enabled": true
+        }
     }
-  }
 }
