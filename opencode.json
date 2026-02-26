@@ -101,5 +101,21 @@
             ],
             "enabled": true
         }
+    },
+    "lsp": {
+        "go": {
+            "command": [
+                "gopls"
+            ],
+            "initialization": {
+                "usePlaceholders": true,
+                "completeUnimported": true,
+                "staticcheck": true,
+                "gofumpt": true
+            },
+            "extensions": [
+                ".go"
+            ]
+        }
     }
 }
