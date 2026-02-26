@@ -56,10 +56,10 @@
                 "baseURL": "http://localhost:11434/v1"
             },
             "models": {
-                "qwen3:8b": {
+                "hf.co/unsloth/Qwen3-30B-A3B-GGUF:Q2_K": {
                     "limit": {
-                        "context": 131072,
-                        "output": 16384
+                        "context": 32768,
+                        "output": 32768
                     }
                 },
                 "qwen3:14b": {
@@ -87,7 +87,7 @@
                 "qwen3-30b-a3b-q2": {
                     "name": "Qwen3 30B A3B (Q2_K)",
                     "limit": {
-                        "context": 8192,
+                        "context": 32768,
                         "output": 16384
                     }
                 }
