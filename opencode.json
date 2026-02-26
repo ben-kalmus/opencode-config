@@ -76,6 +76,22 @@
                     }
                 }
             }
+        },
+        "llama-cpp": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "llama.cpp (local)",
+            "options": {
+                "baseURL": "http://localhost:11435/v1"
+            },
+            "models": {
+                "qwen3-30b-a3b-q2": {
+                    "name": "Qwen3 30B A3B (Q2_K)",
+                    "limit": {
+                        "context": 8192,
+                        "output": 16384
+                    }
+                }
+            }
         }
     },
     "mcp": {
