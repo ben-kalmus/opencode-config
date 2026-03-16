@@ -76,6 +76,22 @@
                     }
                 }
             }
+        },
+        "llama-swap": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "llama-swap (local)",
+            "options": {
+                "baseURL": "http://localhost:11435/v1"
+            },
+            "models": {
+                "qwen3.5-9b": {
+                    "name": "Qwen 3.5 9B Q4_K_M (thinking)",
+                    "limit": {
+                        "context": 32768,
+                        "output": 16384
+                    }
+                }
+            }
         }
     },
     "mcp": {
