@@ -22,3 +22,8 @@ Enable web search in opencode:
 # .zshrc / .bashrc
 export OPENCODE_ENABLE_EXA=1 
 ```
+
+## Plugins
+
+Consider [superpowers](https://github.com/obra/superpowers). A set of skills to guide development, careful planning, incorporating best practices and without making the same mistakes.
+Navigate to [this page](https://github.com/obra/superpowers/blob/main/docs/README.opencode.md)
