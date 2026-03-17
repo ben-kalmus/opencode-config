@@ -6,6 +6,21 @@
     "plugin": [
         "@tarquinen/opencode-dcp@latest"
     ],
+    "mcp": {
+        "paper-search": {
+            "type": "local",
+            "command": [
+                "uv",
+                "run",
+                "--directory",
+                "/home/benkalmus/repos/paper-search-mcp",
+                "-m",
+                "paper_search_mcp.server"
+            ],
+            "environment": {},
+            "enabled": false
+        }
+    },
     "provider": {
         "openrouter": {
             "api": "https://openrouter.ai/api/v1",
