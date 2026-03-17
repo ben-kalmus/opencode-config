@@ -4,7 +4,8 @@
         "websearch": "allow"
     },
     "plugin": [
-        "@tarquinen/opencode-dcp@latest"
+        "@tarquinen/opencode-dcp@latest",
+        "opencode-snip@latest"
     ],
     "mcp": {
         "paper-search": {
