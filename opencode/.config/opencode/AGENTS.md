@@ -51,3 +51,5 @@ Do not use `` or quotes within [] when creating a source code link.
 Never commit your own changes unless directly asked to by the user.
 Never stage your changes unless directly asked to by the user.
 Never push or pull, resolve conflicts or rebase/merge UNLESS asked to by user.
+# IMPORTANT
+NEVER READ .env files. TREAT KEYS AND SECRETS HIDDEN AND SECURE.
