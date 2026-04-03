@@ -1,0 +1,21 @@
+[Unit]
+Description=Remote Opencode Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# User=benkalmus
+# Group=benkalmus
+# SupplementaryGroups=benkalmus,docker,ssl-cert,adm,dip,plugdev,lpadmin,sambashare,render
+WorkingDirectory=/home/benkalmus/work
+ExecStart=/usr/bin/npx remote-opencode start
+Restart=always
+RestartSec=30
+EnvironmentFile=/home/benkalmus/.config/.env
+Environment=OPENCODE_ENABLE_EXA=1
+Environment=NODE_ENV=production
+Environment=PATH=/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/home/linuxbrew/.linuxbrew/bin:/snap/bin
+
+[Install]
+WantedBy=default.target

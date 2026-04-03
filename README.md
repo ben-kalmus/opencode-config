@@ -33,3 +33,28 @@ Consider [superpowers](https://github.com/obra/superpowers). A set of skills to 
 Navigate to [this page](https://github.com/obra/superpowers/blob/main/docs/README.opencode.md)
 
 See more [on this page](https://github.com/awesome-opencode/awesome-opencode).
+
+## Remote Opencode-
+
+### Discord bot
+
+1. Create a service file (replace path and username)
+2. Perform `npx remote-opencode setup`
+3. Symlink the **user** service file:
+
+```sh 
+ln -snf $(pwd)/remote-opencode.service ~/.config/systemd/user/remote-opencode.service
+```
+
+4. Start and enable the service:
+
+```sh
+systemctl --user daemon-reload
+
+systemctl --user start remote-opencode.service
+systemctl --user enable remote-opencode.service
+
+# Troubleshooting logs:
+journalctl --user -u remote-opencode.service -f
+```
+
