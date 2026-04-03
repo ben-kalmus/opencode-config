@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenCode Telegram Bot Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/benkalmus/work
+ExecStart=/bin/sh -c 'opencode serve & SERVER_PID=$!; trap "kill $SERVER_PID" TERM INT; npx @grinev/opencode-telegram-bot; kill $SERVER_PID'
+Restart=always
+RestartSec=30
+EnvironmentFile=/home/benkalmus/.config/.env
+Environment=OPENCODE_ENABLE_EXA=1
+Environment=NODE_ENV=production
+Environment=PATH=/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/sbin:/home/linuxbrew/.linuxbrew/bin:/snap/bin
+
+[Install]
+WantedBy=default.target

@@ -58,3 +58,36 @@ systemctl --user enable remote-opencode.service
 journalctl --user -u remote-opencode.service -f
 ```
 
+### Telegram bot
+
+Uses [opencode-telegram-bot](https://github.com/grinev/opencode-telegram-bot). Runs both `opencode serve` and the Telegram bot in a single service.
+
+1. Install the bot's dependencies and run initial config wizard:
+
+```sh
+npx @grinev/opencode-telegram-bot
+```
+
+2. Symlink the service file:
+
+```sh
+ln -snf $(pwd)/opencode-telegram.service ~/.config/systemd/user/opencode-telegram.service
+```
+
+3. Start and enable:
+
+```sh
+systemctl --user daemon-reload
+systemctl --user enable --now opencode-telegram
+
+# Allow service to run without an active login session:
+loginctl enable-linger $(whoami)
+```
+
+4. Check status / logs:
+
+```sh
+systemctl --user status opencode-telegram
+journalctl --user -u opencode-telegram -f
+```
+
