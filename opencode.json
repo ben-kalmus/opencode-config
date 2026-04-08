@@ -3,6 +3,11 @@
     "permission": {
         "websearch": "allow"
     },
+    "plugin": [
+        "@rama_nigg/open-cursor@latest",
+        "@tarquinen/opencode-dcp@latest",
+        "superpowers@git+https://github.com/obra/superpowers.git"
+    ],
     "provider": {
         "algolia-enablers": {
             "npm": "@ai-sdk/openai-compatible",
@@ -87,7 +92,7 @@
                 "qwen3.5-9b": {
                     "name": "Qwen 3.5 9B Q4_K_M (thinking)",
                     "limit": {
-                        "context": 32768,
+                        "context": 200000,
                         "output": 16384
                     }
                 }
@@ -108,14 +113,14 @@
                 "MILVUS_ADDRESS": "127.0.0.1:19530",
                 "MILVUS_TOKEN": "local"
             },
-            "enabled": true
+            "enabled": false
         },
         "memory": {
             "type": "local",
             "command": [
                 "mcp-server-memory"
             ],
-            "enabled": true
+            "enabled": false
         }
     },
     "lsp": {
