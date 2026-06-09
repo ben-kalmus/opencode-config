@@ -99,3 +99,15 @@ The homepage visit establishes a session cookie that bypasses Akamai's challenge
 
 ### Key Lesson: Always Verify Prices Live
 Web search results can be months out of date. A live browser check can find prices significantly different from what search snippets report. Always open the product page in the browser to confirm the current price before advising the user.
+
+### Playwright MCP Snapshot Mode
+
+The Playwright MCP server runs with `--snapshot-mode none`. This disables automatic page snapshots after every action (click, navigate, type). Without this, each action returns a 50-500KB accessibility tree that fills agent context within 3-4 interactions.
+
+How to work with `--snapshot-mode none`:
+- After `browser_navigate`, call `browser_snapshot` to see the page.
+- After `browser_click` or `browser_type` that changes the page significantly, call `browser_snapshot` again.
+- For simple actions (clicking a cookie accept button), skip the snapshot and proceed.
+- Use `browser_snapshot` with `filename` parameter to save large snapshots to a file, then grep/read specific parts.
+
+The `browser_snapshot` tool returns a YAML accessibility tree with `ref` IDs on interactive elements. Use these refs as `target` parameters in `browser_click`, `browser_type`, etc.
