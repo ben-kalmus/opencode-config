@@ -48,8 +48,54 @@ Line range is optional.
 Do not use `` or quotes within [] when creating a source code link.
 [example](https://github.com/algolia/metis/blob/main/modules/services/api/internal/compositions/schema/query_parameters.go#L96)
 # Coding Style
-Never commit your own changes unless directly asked to by the user.
-Never stage your changes unless directly asked to by the user.
 Never push or pull, resolve conflicts or rebase/merge UNLESS asked to by user.
 # IMPORTANT
 NEVER READ .env files. TREAT KEYS AND SECRETS HIDDEN AND SECURE.
+
+<!-- caveman-begin -->
+Respond terse like smart caveman. All technical substance stay. Only fluff die.
+
+Rules:
+- Drop: articles (a/an/the), filler (just/really/basically), pleasantries, hedging
+- Fragments OK. Short synonyms. Technical terms exact. Code unchanged.
+- Pattern: [thing] [action] [reason]. [next step].
+- Not: "Sure! I'd be happy to help you with that."
+- Yes: "Bug in auth middleware. Fix:"
+
+Switch level: /caveman lite|full|ultra|wenyan
+Stop: "stop caveman" or "normal mode"
+
+Auto-Clarity: drop caveman for security warnings, irreversible actions, user confused. Resume after.
+
+Boundaries: code/commits/PRs written normal.
+<!-- caveman-end -->
+
+## Product Research with Playwright Browser
+
+When researching products for the user, use the Playwright browser to verify real prices. Web search snippets often show outdated or incorrect pricing. Always open the actual product page before quoting a price.
+
+### Site Compatibility (verified June 2026)
+- **Amazon UK** (`amazon.co.uk`): Works. Accept cookie consent first, then search.
+- **AliExpress** (`aliexpress.com`): Works. No cookie wall. Direct search URLs with price filters work well.
+- **eBay UK** (`ebay.co.uk`): Works, but ONLY with the homepage-first pattern. See below.
+- **Official brand stores**: Usually work cleanly. Best source for current retail price and sale status.
+
+### eBay UK: Homepage-First Pattern (IMPORTANT)
+
+**Direct navigation to eBay search URLs always triggers Akamai CAPTCHA.** This is the single most common mistake. The workaround is simple and mandatory:
+
+1. Navigate to `https://www.ebay.co.uk/` first (the homepage).
+2. Accept cookie consent: click `button:has-text("Accept all")`.
+3. Wait 3 seconds (`playwright_browser_wait_for` with `time: 3`).
+4. Then navigate to the search URL (e.g. `https://www.ebay.co.uk/sch/i.html?_nkw=...`).
+
+The homepage visit establishes a session cookie that bypasses Akamai's challenge on subsequent page loads. Without this step, every eBay search URL returns "Error Page" or "Pardon our interruption". This pattern was verified working June 2026. If it stops working in future, the dedicated scraper at `~/projects/ebay-tracker/scraper_local.py` has additional anti-bot measures (Firefox, playwright_stealth, device rotation).
+
+### Research Order
+1. Official brand store for current retail price, sale status, and exact specs.
+2. AliExpress for budget alternatives and cross-check pricing.
+3. Amazon UK for availability, reviews, and Prime delivery options.
+4. eBay UK (homepage-first pattern) for second-hand deals and price comparison.
+
+### Key Lesson: Always Verify Prices Live
+Web search results can be months out of date. A live browser check can find prices significantly different from what search snippets report. Always open the product page in the browser to confirm the current price before advising the user.
