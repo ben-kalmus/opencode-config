@@ -5,7 +5,7 @@
     },
     "plugin": [
         "@tarquinen/opencode-dcp@latest",
-        "opencode-snip@latest"
+        // "opencode-snip@latest"
     ],
     "mcp": {
         "paper-search": {
@@ -20,6 +20,11 @@
             ],
             "environment": {},
             "enabled": false
+        },
+        "playwright": {
+            "type": "remote",
+            "url": "http://localhost:8931/mcp",
+            "enabled": true
         }
     },
     "provider": {
@@ -28,6 +33,29 @@
             "options": {
                 "apiKey": "{env:OPENROUTER_API_KEY}",
                 "baseURL": "https://openrouter.ai/api/v1"
+            },
+            "models": {
+                "google/gemma-4-26b-a4b-it": {
+                    "name": "Gemma 4 26B A4B IT",
+                    "limit": {
+                        "context": 262144,
+                        "output": 65536
+                    }
+                },
+                "google/gemma-4-31b-it": {
+                    "name": "Gemma 4 31B IT",
+                    "limit": {
+                        "context": 262144,
+                        "output": 65536
+                    }
+                },
+                "qwen/qwen3.5-397b-a17b": {
+                    "name": "qwen3.5-397b-a17b",
+                    "limit": {
+                        "context": 262144,
+                        "output": 65536
+                    }
+                },
             }
         }
     }
