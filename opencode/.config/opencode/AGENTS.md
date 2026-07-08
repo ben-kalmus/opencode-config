@@ -72,37 +72,93 @@ Boundaries: code/commits/PRs written normal.
 
 ## Playwright Browser
 
-The Playwright MCP server uses the tontoko/fast-playwright-mcp fork with built-in token optimization:
+Two MCP servers. Pick by login need.
 
-- **`expectation` parameter**: All tools accept `expectation: {includeSnapshot: false}` to skip the page snapshot in the response (70-80% token savings per action).
-- **`browser_batch_execute`**: Run multiple actions in a single MCP call. Saves 90% tokens vs individual calls.
-- A sidecar process kills orphaned Chromium older than 20 minutes.
+### browser-lite (tontoko fork, :8931)
 
-When researching products for the user, use the Playwright browser to verify real prices. Web search snippets often show outdated or incorrect pricing. Always open the actual product page before quoting a price.
+Docker `playwright-mcp` on `shared-network`. Isolated headless Chromium. Stealth patches. Token-optimized.
+
+- `expectation: {includeSnapshot: false}` = skip snapshot (70-80% token savings)
+- `browser_batch_execute` = multi-action single call (90% token savings)
+- Sidecar kills orphaned Chromium >20min
+- Use: browsing, scraping, Amazon, AliExpress, brand stores, eBay search
+
+### browser-auth (official MCP, :8932)
+
+Systemd user service. Connects persistent headless Chromium via CDP :9222. Shares logged-in sessions.
+
+- Official `@playwright/mcp`. No token optimization, no batch execute.
+- Session synced from snap Chromium via `sync-browser-auth`
+- Use: Facebook Marketplace, eBay bid history, any auth-required site
+- **NEVER close browser-auth tabs unless user asks.** Active searches may be running.
+
+### Which Browser
+
+| Task | Use |
+|------|-----|
+| Browsing, scraping, Amazon, AliExpress, brand stores | browser-lite |
+| eBay UK search | browser-lite (homepage-first pattern) |
+| Facebook Marketplace | browser-auth |
+| eBay bid history, saved searches | browser-auth |
+| Any site behind login | browser-auth |
+
+### Resource Usage
+
+| Component | RAM | CPU |
+|-----------|-----|-----|
+| browser-lite | ~100MB | ~0% |
+| browser-auth Chromium | ~500MB idle, ~1.8GB with tabs | ~0.5% idle, ~7% active |
+| browser-auth MCP (node) | ~75MB | ~0% |
+| playwright-mcpo | ~68MB | ~0.3% |
+| **Total** | **~750MB idle, ~2GB load** | |
 
 ### Site Compatibility (verified June 2026)
-- **Amazon UK** (`amazon.co.uk`): Works. Accept cookie consent first, then search.
-- **AliExpress** (`aliexpress.com`): Works. No cookie wall. Direct search URLs with price filters work well.
-- **eBay UK** (`ebay.co.uk`): Works, but ONLY with the homepage-first pattern. See below.
-- **Official brand stores**: Usually work cleanly. Best source for current retail price and sale status.
 
-### eBay UK: Homepage-First Pattern (IMPORTANT)
+- Amazon UK: accept cookies, then search
+- AliExpress: direct search URLs, no cookie wall
+- eBay UK: homepage-first pattern ONLY (see below)
+- Brand stores: usually work clean
+- Facebook Marketplace: browser-auth only
 
-**Direct navigation to eBay search URLs always triggers Akamai CAPTCHA.** This is the single most common mistake. The workaround is simple and mandatory:
+### eBay Homepage-First Pattern (MANDATORY)
 
-1. Navigate to `https://www.ebay.co.uk/` first (the homepage).
-2. Accept cookie consent: click `button:has-text("Accept all")`.
-3. Wait 3 seconds (`playwright_browser_wait_for` with `time: 3`).
-4. Then navigate to the search URL (e.g. `https://www.ebay.co.uk/sch/i.html?_nkw=...`).
+Direct eBay search URL = Akamai CAPTCHA. Always:
 
-The homepage visit establishes a session cookie that bypasses Akamai's challenge on subsequent page loads. Without this step, every eBay search URL returns "Error Page" or "Pardon our interruption". This pattern was verified working June 2026. If it stops working in future, the dedicated scraper at `~/projects/ebay-tracker/scraper_local.py` has additional anti-bot measures (Firefox, playwright_stealth, device rotation).
+1. Navigate `https://www.ebay.co.uk/`
+2. Click "Accept all" cookies
+3. Wait 3s
+4. Navigate search URL
+
+Homepage sets session cookie. Without it = "Error Page" or "Pardon our interruption". Fallback: `~/projects/ebay-tracker/scraper_local.py` (Firefox, stealth, device rotation).
 
 ### Research Order
-1. Official brand store for current retail price, sale status, and exact specs.
-2. AliExpress for budget alternatives and cross-check pricing.
-3. Amazon UK for availability, reviews, and Prime delivery options.
-4. eBay UK (homepage-first pattern) for second-hand deals and price comparison.
 
-### Key Lesson: Always Verify Prices Live
-Web search results can be months out of date. A live browser check can find prices significantly different from what search snippets report. Always open the product page in the browser to confirm the current price before advising the user.
+1. Brand store (retail price, sale status, specs)
+2. AliExpress (budget alternatives)
+3. Amazon UK (availability, reviews, Prime)
+4. eBay UK (second-hand deals)
+
+Always verify prices live. Web search snippets often stale.
+
+### OpenWebUI Wiring
+
+| Name | Type | URL |
+|------|------|-----|
+| browser-lite | MCP Streamable HTTP | `http://playwright-mcp:8931/mcp` |
+| browser-auth | MCP Streamable HTTP | `http://host.docker.internal:8932/mcp` |
+
+### Maintenance
+
+- Start: `browser-auth-start [url]` (syncs session, starts services, opens URL)
+- Stop: `browser-auth-stop` (stops services, disables so no CPU waste)
+- Default URL: Facebook Marketplace UK
+- Auto-restart daily 3AM: `chromium-cdp-restart.timer` (reclaims memory from tab bloat)
+- Status: `systemctl --user status chromium-cdp.service playwright-mcp-auth.service`
+- Logs: `journalctl --user -u chromium-cdp.service -f`
+
+### Known Issues
+
+- Node.js resolves `localhost` to `::1` (IPv6). Use `127.0.0.1` in MCP URLs.
+- Snap Chromium crashes headless. CDP uses Playwright Chromium at `~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome`.
+- `--allowed-hosts '*'` required on `playwright-mcp-auth.service` for Docker access.
 

@@ -4,5 +4,8 @@
         "leader": "ctrl+b",
         "display_thinking": "<leader>d",
         "tool_details": "<leader>w"
-    }
+    },
+    "plugin": [
+      "@tarquinen/opencode-dcp@latest"
+    ]
 }
