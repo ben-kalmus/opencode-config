@@ -35,7 +35,11 @@
   "permission": {
     "websearch": "allow"
   },
-  "plugin": ["./plugins/caveman/plugin.js", "@tarquinen/opencode-dcp@latest"],
+  "plugin": [
+    "./plugins/caveman/plugin.js",
+    "@tarquinen/opencode-dcp@latest",
+    "opencode-history-search"
+  ],
   "provider": {
     "openrouter": {
       "api": "https://openrouter.ai/api/v1",
