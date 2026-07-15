@@ -109,8 +109,7 @@ Systemd user service. Connects persistent headless Chromium via CDP :9222. Share
 | browser-lite | ~100MB | ~0% |
 | browser-auth Chromium | ~500MB idle, ~1.8GB with tabs | ~0.5% idle, ~7% active |
 | browser-auth MCP (node) | ~75MB | ~0% |
-| playwright-mcpo | ~68MB | ~0.3% |
-| **Total** | **~750MB idle, ~2GB load** | |
+| **Total** | **~675MB idle, ~2GB load** | |
 
 ### Site Compatibility (verified June 2026)
 
