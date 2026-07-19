@@ -71,26 +71,20 @@ Boundaries: code/commits/PRs written normal.
 <!-- caveman-end -->
 
 ## Playwright Browser
-
 Two MCP servers. Pick by login need.
-
 ### browser-lite (tontoko fork, :8931)
-
 Docker `playwright-mcp` on `shared-network`. Isolated headless Chromium. Stealth patches. Token-optimized.
 
 - `expectation: {includeSnapshot: false}` = skip snapshot (70-80% token savings)
 - `browser_batch_execute` = multi-action single call (90% token savings)
 - Sidecar kills orphaned Chromium >20min
 - Use: browsing, scraping, Amazon, AliExpress, brand stores, eBay search
-
 ### browser-auth (official MCP, :8932)
-
 Systemd user service. Connects persistent headless Chromium via CDP :9222. Shares logged-in sessions.
-
 - Official `@playwright/mcp`. No token optimization, no batch execute.
 - Session synced from snap Chromium via `sync-browser-auth`
 - Use: Facebook Marketplace, eBay bid history, any auth-required site
-- **NEVER close browser-auth tabs unless user asks.** Active searches may be running.
+- **ask user to close browser-auth tabs.** Active searches may be running.
 
 ### Which Browser
 
@@ -102,43 +96,26 @@ Systemd user service. Connects persistent headless Chromium via CDP :9222. Share
 | eBay bid history, saved searches | browser-auth |
 | Any site behind login | browser-auth |
 
-### Resource Usage
-
-| Component | RAM | CPU |
-|-----------|-----|-----|
-| browser-lite | ~100MB | ~0% |
-| browser-auth Chromium | ~500MB idle, ~1.8GB with tabs | ~0.5% idle, ~7% active |
-| browser-auth MCP (node) | ~75MB | ~0% |
-| **Total** | **~675MB idle, ~2GB load** | |
-
 ### Site Compatibility (verified June 2026)
-
 - Amazon UK: accept cookies, then search
 - AliExpress: direct search URLs, no cookie wall
 - eBay UK: homepage-first pattern ONLY (see below)
 - Brand stores: usually work clean
 - Facebook Marketplace: browser-auth only
-
 ### eBay Homepage-First Pattern (MANDATORY)
-
 Direct eBay search URL = Akamai CAPTCHA. Always:
-
 1. Navigate `https://www.ebay.co.uk/`
 2. Click "Accept all" cookies
 3. Wait 3s
 4. Navigate search URL
-
 Homepage sets session cookie. Without it = "Error Page" or "Pardon our interruption". Fallback: `~/projects/ebay-tracker/scraper_local.py` (Firefox, stealth, device rotation).
 
 ### Research Order
-
 1. Brand store (retail price, sale status, specs)
 2. AliExpress (budget alternatives)
 3. Amazon UK (availability, reviews, Prime)
 4. eBay UK (second-hand deals)
-
 Always verify prices live. Web search snippets often stale.
-
 ### OpenWebUI Wiring
 
 | Name | Type | URL |
@@ -147,17 +124,13 @@ Always verify prices live. Web search snippets often stale.
 | browser-auth | MCP Streamable HTTP | `http://host.docker.internal:8932/mcp` |
 
 ### Maintenance
-
 - Start: `browser-auth-start [url]` (syncs session, starts services, opens URL)
 - Stop: `browser-auth-stop` (stops services, disables so no CPU waste)
 - Default URL: Facebook Marketplace UK
 - Auto-restart daily 3AM: `chromium-cdp-restart.timer` (reclaims memory from tab bloat)
 - Status: `systemctl --user status chromium-cdp.service playwright-mcp-auth.service`
 - Logs: `journalctl --user -u chromium-cdp.service -f`
-
-### Known Issues
-
-- Node.js resolves `localhost` to `::1` (IPv6). Use `127.0.0.1` in MCP URLs.
-- Snap Chromium crashes headless. CDP uses Playwright Chromium at `~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome`.
-- `--allowed-hosts '*'` required on `playwright-mcp-auth.service` for Docker access.
-
+## Misc
+- for rsync commands always provide progress information. --info=progress2
+- For long running commands, minutes, always let user know about it before running.
+- FOR ANY WORK, SCRIPTS, READMEs, BASH, CODE, ALWAYS MAKE PATHS DYNAMIC OR GENERATED, NEVER STATIC AND NEVER ABSOLUTE. EASY TO BREAK WHEN A FILE MOVES.
