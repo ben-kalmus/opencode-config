@@ -3,12 +3,12 @@
   "mcp": {
     "browser-auth": {
       "type": "remote",
-      "url": "http://optiplex.local:8932/mcp",
+      "url": "http://opti.local:8932/mcp",
       "enabled": true
     },
     "browser-lite": {
       "type": "remote",
-      "url": "http://optiplex.local:8931/mcp",
+      "url": "http://opti.local:8931/mcp",
       "enabled": true
     },
     "engram": {
