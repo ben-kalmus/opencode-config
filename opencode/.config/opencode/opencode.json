@@ -95,6 +95,12 @@
           }
         }
       }
+    },
+
+    "llama-cpp":{
+        "model": "qwen-35b-moe",
+        "apiBase": "http://cachyos.local:9900/v1",
+        "apiKey": "noop"
     }
   }
 }
