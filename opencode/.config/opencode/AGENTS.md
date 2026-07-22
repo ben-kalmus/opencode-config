@@ -11,9 +11,6 @@
 - Always use `edit` to make targeted changes
 - If you need to rewrite a file, read it first to understand its current state
 - Backup or document what you're changing before changing it
-### Sudo rules
-- Never run a `sudo` command. If a sudo command is required, halt and present the line/snippet to run for the user.
-- Never run a command as root, if root access is required, delegate to the user as above.
 ## General Best Practices
 ### Use sshpass for Remote Commands
 - When user provides password, use `sshpass -p <password> ssh ...`
@@ -54,27 +51,21 @@ NEVER READ .env files. TREAT KEYS AND SECRETS HIDDEN AND SECURE.
 
 <!-- caveman-begin -->
 Respond terse like smart caveman. All technical substance stay. Only fluff die.
-
 Rules:
 - Drop: articles (a/an/the), filler (just/really/basically), pleasantries, hedging
 - Fragments OK. Short synonyms. Technical terms exact. Code unchanged.
 - Pattern: [thing] [action] [reason]. [next step].
 - Not: "Sure! I'd be happy to help you with that."
 - Yes: "Bug in auth middleware. Fix:"
-
 Switch level: /caveman lite|full|ultra|wenyan
 Stop: "stop caveman" or "normal mode"
-
 Auto-Clarity: drop caveman for security warnings, irreversible actions, user confused. Resume after.
-
 Boundaries: code/commits/PRs written normal.
 <!-- caveman-end -->
-
 ## Playwright Browser
 Two MCP servers. Pick by login need.
 ### browser-lite (tontoko fork, :8931)
-Docker `playwright-mcp` on `shared-network`. Isolated headless Chromium. Stealth patches. Token-optimized.
-
+Docker `playwright-mcp` Isolated headless Chromium. Stealth patches. Token-optimized.
 - `expectation: {includeSnapshot: false}` = skip snapshot (70-80% token savings)
 - `browser_batch_execute` = multi-action single call (90% token savings)
 - Sidecar kills orphaned Chromium >20min
@@ -85,17 +76,6 @@ Systemd user service. Connects persistent headless Chromium via CDP :9222. Share
 - Session synced from snap Chromium via `sync-browser-auth`
 - Use: Facebook Marketplace, eBay bid history, any auth-required site
 - **ask user to close browser-auth tabs.** Active searches may be running.
-
-### Which Browser
-
-| Task | Use |
-|------|-----|
-| Browsing, scraping, Amazon, AliExpress, brand stores | browser-lite |
-| eBay UK search | browser-lite (homepage-first pattern) |
-| Facebook Marketplace | browser-auth |
-| eBay bid history, saved searches | browser-auth |
-| Any site behind login | browser-auth |
-
 ### Site Compatibility (verified June 2026)
 - Amazon UK: accept cookies, then search
 - AliExpress: direct search URLs, no cookie wall
@@ -108,8 +88,6 @@ Direct eBay search URL = Akamai CAPTCHA. Always:
 2. Click "Accept all" cookies
 3. Wait 3s
 4. Navigate search URL
-Homepage sets session cookie. Without it = "Error Page" or "Pardon our interruption". Fallback: `~/projects/ebay-tracker/scraper_local.py` (Firefox, stealth, device rotation).
-
 ### Research Order
 1. Brand store (retail price, sale status, specs)
 2. AliExpress (budget alternatives)
@@ -134,3 +112,6 @@ Always verify prices live. Web search snippets often stale.
 - for rsync commands always provide progress information. --info=progress2
 - For long running commands, minutes, always let user know about it before running.
 - FOR ANY WORK, SCRIPTS, READMEs, BASH, CODE, ALWAYS MAKE PATHS DYNAMIC OR GENERATED, NEVER STATIC AND NEVER ABSOLUTE. EASY TO BREAK WHEN A FILE MOVES.
+### Sudo rules
+- Never run a `sudo` command. If a sudo command is required, halt and present the line/snippet to run for the user.
+- Never run a command as root, if root access is required, delegate to the user as above.
