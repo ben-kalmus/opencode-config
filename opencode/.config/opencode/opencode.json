@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "llama-cpp/qwen-35b-moe",
   "mcp": {
     "browser-auth": {
       "type": "remote",
@@ -97,10 +98,28 @@
       }
     },
 
-    "llama-cpp":{
-        "model": "qwen-35b-moe",
-        "apiBase": "http://cachyos.local:9900/v1",
-        "apiKey": "noop"
+    "llama-cpp": {
+      "api": "http://cachyos.local:9900/v1",
+      "options": {
+        "apiKey": "noop",
+        "baseURL": "http://cachyos.local:9900/v1"
+      },
+      "models": {
+        "qwen-3.6-35b-a3b": {
+          "name": "Qwen 3.6 35B MoE",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+        "qwen-3.6-27b": {
+          "name": "Qwen 3.6 27B",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        }
+      }
     }
   }
 }
