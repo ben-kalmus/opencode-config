@@ -1,3 +1,6 @@
 [submodule "opencode-move-session"]
 	path = opencode-move-session
 	url = git@github.com:moha-abdi/opencode-move-session.git
+[submodule "opencode/.config/opencode/plugins/opencode-smartsnip"]
+	path = opencode/.config/opencode/plugins/opencode-smartsnip
+	url = https://github.com/carson2222/opencode-smartsnip.git
