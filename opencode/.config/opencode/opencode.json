@@ -78,7 +78,8 @@
   "plugin": [
     "./plugins/caveman/plugin.js",
     "@tarquinen/opencode-dcp@latest",
-    "opencode-history-search"
+    "opencode-history-search",
+    "opencode-smartsnip"
   ],
   "provider": {
     "openrouter": {
