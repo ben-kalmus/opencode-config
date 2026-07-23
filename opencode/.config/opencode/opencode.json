@@ -123,21 +123,21 @@
         "qwen-3.6-35b-a3b": {
           "name": "Qwen 3.6 35B A3B MoE",
           "limit": {
-            "context": 131072,
+            "context": 85000,
             "output": 32768
           }
         },
         "qwen-3.6-27b": {
           "name": "Qwen 3.6 27B",
           "limit": {
-            "context": 131072,
+            "context": 85000,
             "output": 32768
           }
         },
-        "qwen-3.6-heretic": {
+        "qwen-3.6-27b-heretic": {
           "name": "Qwen 3.6 27B Heretic",
           "limit": {
-            "context": 131072,
+            "context": 85000,
             "output": 32768
           }
         }
