@@ -2,11 +2,12 @@
   "$schema": "https://opencode.ai/tui.json",
   "keybinds": {
     "leader": "ctrl+b",
-    "display_thinking": "\u003cleader\u003ed",
-    "tool_details": "\u003cleader\u003ew"
+    "session_list": "ctrl+s",
+    "display_thinking": "ctrl+d",
+    "model_provider_list": "ctrl+shift+m",
+    "model_list": "ctrl+o",
+    "session_new": "ctrl+n",
+    "tool_details": "<leader>w"
   },
-  "plugin": [
-    "@tarquinen/opencode-dcp@latest",
-    "opencode-subagent-statusline"
-  ]
+  "plugin": ["@tarquinen/opencode-dcp@latest", "opencode-subagent-statusline"]
 }
