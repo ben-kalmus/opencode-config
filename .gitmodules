@@ -1,0 +1,3 @@
+[submodule "opencode-move-session"]
+	path = opencode-move-session
+	url = git@github.com:moha-abdi/opencode-move-session.git
