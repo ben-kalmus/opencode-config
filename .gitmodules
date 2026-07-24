@@ -4,3 +4,6 @@
 [submodule "opencode/.config/opencode/plugins/opencode-smartsnip"]
 	path = opencode/.config/opencode/plugins/opencode-smartsnip
 	url = https://github.com/carson2222/opencode-smartsnip.git
+[submodule "opencode/.config/opencode/plugins/opencode-context-analysis"]
+	path = opencode/.config/opencode/plugins/opencode-context-analysis
+	url = git@github.com:IgorWarzocha/Opencode-Context-Analysis-Plugin.git
