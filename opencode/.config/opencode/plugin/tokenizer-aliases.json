@@ -20,6 +20,7 @@
     "code-llama": "Xenova/llama-code-tokenizer",
     "deepseek-r1": "deepseek-ai/DeepSeek-R1",
     "deepseek-v4": "deepseek-ai/DeepSeek-V3",
+    "deepseek-v4-flash-free": "deepseek-ai/DeepSeek-V3",
     "deepseek-v3": "deepseek-ai/DeepSeek-V3",
     "deepseek-v2": "deepseek-ai/DeepSeek-V2",
     "mistral-large": "Xenova/mistral-tokenizer-v3",
