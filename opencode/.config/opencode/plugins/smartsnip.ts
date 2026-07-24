@@ -1,1 +1,1 @@
-export { default } from "./plugins/opencode-smartsnip/src/index"
+export { default } from "./opencode-smartsnip/src/index"
