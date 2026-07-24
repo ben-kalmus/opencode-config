@@ -1,0 +1,1 @@
+../plugins/opencode-context-analysis/.opencode/plugin/tokenizer-registry.d.ts

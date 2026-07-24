@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "llama-cpp/qwen-35b-moe",
   "mcp": {
     // "browser-auth": {
     //   "type": "remote",
@@ -10,9 +9,9 @@
     "browser-lite": {
       "type": "remote",
       "url": "http://opti.local:8931/mcp",
-      "enabled": true
+      "enabled": false // careful with this, HUGE CONTEXT DRAIN
     },
-    "engram": {
+        "engram": {
       "command": [
         "/home/linuxbrew/.linuxbrew/bin/engram",
         "mcp",
@@ -79,7 +78,7 @@
     "./plugins/caveman/plugin.js",
     "./plugins/smartsnip.ts",
     "@tarquinen/opencode-dcp@latest",
-    // "opencode-history-search"
+    "./plugin/context-usage.ts",
   ],
   "provider": {
     "openrouter": {
