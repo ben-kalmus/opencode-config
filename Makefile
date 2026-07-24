@@ -1,11 +1,15 @@
 PACKAGES := opencode
 PLUGIN_DIR := opencode/.config/opencode/plugin
 
-.PHONY: all stow unstow restow adopt clean vendor
+.PHONY: all init stow unstow restow adopt vendor clean
 
-all: stow
+all: init vendor stow
 
-stow:
+init:
+	@echo "Initializing submodules..."
+	@git submodule update --init --recursive
+
+stow: init
 	@for pkg in $(PACKAGES); do \
 		echo "Stowing $$pkg..."; \
 		stow -v -R -t $(HOME) $$pkg; \
