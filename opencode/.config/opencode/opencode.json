@@ -2,11 +2,11 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "llama-cpp/qwen-35b-moe",
   "mcp": {
-    "browser-auth": {
-      "type": "remote",
-      "url": "http://opti.local:8932/mcp",
-      "enabled": true
-    },
+    // "browser-auth": {
+    //   "type": "remote",
+    //   "url": "http://opti.local:8932/mcp",
+    //   "enabled": true
+    // },
     "browser-lite": {
       "type": "remote",
       "url": "http://opti.local:8931/mcp",
@@ -21,17 +21,17 @@
       "enabled": true,
       "type": "local"
     },
-    "paper-search": {
-      "type": "local",
-      "command": [
-        "uv",
-        "run",
-        "--directory",
-        "/home/benkalmus/repos/paper-search-mcp",
-        "-m",
-        "paper_search_mcp.server"
-      ]
-    }
+    // "paper-search": {
+    //   "type": "local",
+    //   "command": [
+    //     "uv",
+    //     "run",
+    //     "--directory",
+    //     "/home/benkalmus/repos/paper-search-mcp",
+    //     "-m",
+    //     "paper_search_mcp.server"
+    //   ]
+    // }
   },
   "lsp": {
     "go": {
@@ -79,7 +79,7 @@
     "./plugins/caveman/plugin.js",
     "./plugins/smartsnip.ts",
     "@tarquinen/opencode-dcp@latest",
-    "opencode-history-search"
+    // "opencode-history-search"
   ],
   "provider": {
     "openrouter": {

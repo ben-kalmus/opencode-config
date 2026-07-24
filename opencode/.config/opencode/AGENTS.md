@@ -38,12 +38,10 @@ When writing markdown, do not automatically split paragraphs to wrap lines, just
 ## Github source code link 
 When generating documents, always link to source code using github.com pattern:  
 [example](https://github.com/<org>/<repo>/blob/<base-branch>/<path>#<line-range>)
-For example:
-Org is `benkalmus` base branch is `master`, therefore link is:
+example: Org is `benkalmus` base branch is `master`, therefore link is:
 [example](https://github.com/benkalmus/opencode-config/blob/master/README.md#L10-L12)
 Line range is optional.
 Do not use `` or quotes within [] when creating a source code link.
-[example](https://github.com/algolia/metis/blob/main/modules/services/api/internal/compositions/schema/query_parameters.go#L96)
 # Coding Style
 Never push or pull, resolve conflicts or rebase/merge UNLESS asked to by user.
 # IMPORTANT
@@ -63,51 +61,18 @@ Auto-Clarity: drop caveman for security warnings, irreversible actions, user con
 Boundaries: code/commits/PRs written normal.
 <!-- caveman-end -->
 ## Playwright Browser
-Two MCP servers. Pick by login need.
 ### browser-lite (tontoko fork, :8931)
 Docker `playwright-mcp` Isolated headless Chromium. Stealth patches. Token-optimized.
-- `expectation: {includeSnapshot: false}` = skip snapshot (70-80% token savings)
-- `browser_batch_execute` = multi-action single call (90% token savings)
-- Sidecar kills orphaned Chromium >20min
+- `expectation: {includeSnapshot: false}` = skip snapshot
+- Sidecar kills orphaned Chromium >30min
 - Use: browsing, scraping, Amazon, AliExpress, brand stores, eBay search
-### browser-auth (official MCP, :8932)
-Systemd user service. Connects persistent headless Chromium via CDP :9222. Shares logged-in sessions.
-- Official `@playwright/mcp`. No token optimization, no batch execute.
-- Session synced from snap Chromium via `sync-browser-auth`
-- Use: Facebook Marketplace, eBay bid history, any auth-required site
-- **ask user to close browser-auth tabs.** Active searches may be running.
-### Site Compatibility (verified June 2026)
-- Amazon UK: accept cookies, then search
-- AliExpress: direct search URLs, no cookie wall
-- eBay UK: homepage-first pattern ONLY (see below)
-- Brand stores: usually work clean
-- Facebook Marketplace: browser-auth only
 ### eBay Homepage-First Pattern (MANDATORY)
 Direct eBay search URL = Akamai CAPTCHA. Always:
 1. Navigate `https://www.ebay.co.uk/`
 2. Click "Accept all" cookies
 3. Wait 3s
 4. Navigate search URL
-### Research Order
-1. Brand store (retail price, sale status, specs)
-2. AliExpress (budget alternatives)
-3. Amazon UK (availability, reviews, Prime)
-4. eBay UK (second-hand deals)
 Always verify prices live. Web search snippets often stale.
-### OpenWebUI Wiring
-
-| Name | Type | URL |
-|------|------|-----|
-| browser-lite | MCP Streamable HTTP | `http://playwright-mcp:8931/mcp` |
-| browser-auth | MCP Streamable HTTP | `http://host.docker.internal:8932/mcp` |
-
-### Maintenance
-- Start: `browser-auth-start [url]` (syncs session, starts services, opens URL)
-- Stop: `browser-auth-stop` (stops services, disables so no CPU waste)
-- Default URL: Facebook Marketplace UK
-- Auto-restart daily 3AM: `chromium-cdp-restart.timer` (reclaims memory from tab bloat)
-- Status: `systemctl --user status chromium-cdp.service playwright-mcp-auth.service`
-- Logs: `journalctl --user -u chromium-cdp.service -f`
 ## Misc
 - for rsync commands always provide progress information. --info=progress2
 - For long running commands, minutes, always let user know about it before running.
