@@ -7,17 +7,17 @@
     //   "enabled": true
     // },
     "browser-lite": {
+      "enabled": false, // careful with this, HUGE CONTEXT DRAIN
       "type": "remote",
       "url": "http://opti.local:8931/mcp",
-      "enabled": false // careful with this, HUGE CONTEXT DRAIN
     },
-        "engram": {
+    "engram": {
+      "enabled": false,
       "command": [
         "/home/linuxbrew/.linuxbrew/bin/engram",
         "mcp",
         "--tools=agent"
       ],
-      "enabled": true,
       "type": "local"
     },
     // "paper-search": {
