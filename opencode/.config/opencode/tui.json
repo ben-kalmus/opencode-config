@@ -3,7 +3,7 @@
   "keybinds": {
     "leader": "ctrl+b",
     "session_list": "ctrl+s",
-    "display_thinking": "ctrl+d",
+    "display_thinking": "ctrl+y",
     "model_provider_list": "ctrl+shift+m",
     "model_list": "ctrl+o",
     "session_new": "ctrl+n",
