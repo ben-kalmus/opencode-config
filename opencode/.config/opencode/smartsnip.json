@@ -1,0 +1,5 @@
+{
+  "deny": ["git commit", "make", "make test"],
+  "toast": true,
+  "stripMimicry": false
+}
