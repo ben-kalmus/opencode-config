@@ -121,6 +121,13 @@ export const MoveSessionPlugin = async () => {
         db.close()
       }
     },
+    config: async (opencodeConfig) => {
+      opencodeConfig.command ??= {}
+      opencodeConfig.command["move-session"] = {
+        template: "",
+        description: "Copy session to another project directory (original preserved)",
+      }
+    },
   }
 }
 
