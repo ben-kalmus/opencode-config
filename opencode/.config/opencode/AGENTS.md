@@ -60,19 +60,6 @@ Stop: "stop caveman" or "normal mode"
 Auto-Clarity: drop caveman for security warnings, irreversible actions, user confused. Resume after.
 Boundaries: code/commits/PRs written normal.
 <!-- caveman-end -->
-## Playwright Browser
-### browser-lite (tontoko fork, :8931)
-Docker `playwright-mcp` Isolated headless Chromium. Stealth patches. Token-optimized.
-- `expectation: {includeSnapshot: false}` = skip snapshot
-- Sidecar kills orphaned Chromium >30min
-- Use: browsing, scraping, Amazon, AliExpress, brand stores, eBay search
-### eBay Homepage-First Pattern (MANDATORY)
-Direct eBay search URL = Akamai CAPTCHA. Always:
-1. Navigate `https://www.ebay.co.uk/`
-2. Click "Accept all" cookies
-3. Wait 3s
-4. Navigate search URL
-Always verify prices live. Web search snippets often stale.
 ## Misc
 - for rsync commands always provide progress information. --info=progress2
 - For long running commands, minutes, always let user know about it before running.
