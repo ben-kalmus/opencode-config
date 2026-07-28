@@ -71,7 +71,8 @@
       "printenv": "deny",
       "env": "deny",
       "sudo *": "deny",
-      "sudo": "deny"
+      "sudo": "deny",
+      "git commit * --no-verify": "deny"
     },
   },
   "plugin": [
