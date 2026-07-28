@@ -6,8 +6,13 @@ DB="$HOME/.local/share/opencode/opencode.db"
 
 [ -n "$TARGET" ] || { echo "ERR: usage: move-session.sh <directory>"; exit 1; }
 [ -n "${OPENCODE_SESSION_ID:-}" ] || { echo "ERR: OPENCODE_SESSION_ID unset (plugin not loaded -- restart opencode)"; exit 2; }
+command -v sqlite3 >/dev/null 2>&1 || { echo "ERR: sqlite3 not found"; exit 2; }
+[ -f "$DB" ] || { echo "ERR: opencode DB not found at $DB"; exit 2; }
+case "$TARGET" in
+  ~*) TARGET="${HOME}${TARGET:1}" ;;
+esac
 [ -d "$TARGET" ] || { echo "ERR: not a directory: $TARGET"; exit 2; }
-TARGET="$(cd "$TARGET" && pwd -P)"
+TARGET="$(cd "$TARGET" && pwd -P)" || { echo "ERR: cannot resolve: $TARGET"; exit 2; }
 
 PARENT="$(sqlite3 "$DB" "SELECT COALESCE(parent_id,'') FROM session WHERE id='$OPENCODE_SESSION_ID';")"
 ROOT_SESSION="${PARENT:-$OPENCODE_SESSION_ID}"
