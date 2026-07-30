@@ -135,6 +135,19 @@ if !started.CompareAndSwap(false, true) {
 
 Think about this when: you need simple state changes without a full mutex. Stats counters, startup flags, phase indicators. CAS (CompareAndSwap) is the lockless version of "check then act."
 
+### semaphore.Weighted — bounded concurrency
+
+Limit concurrent operations (DB connections, API calls, goroutine pool size). Weighted permits let you acquire more than one at a time.
+
+```go
+s := semaphore.NewWeighted(10)
+s.Acquire(ctx, 2) // acquire 2 permits
+defer s.Release(2)
+```
+
+Pro: context-aware, weighted permits, backpressure.
+Con: heavier than channel for fixed count; explicit Release.
+
 ### context.Context — cancellation, deadlines, propagation
 
 ```go
@@ -318,7 +331,7 @@ You do not proceed until all ambiguities are resolved. You do not make assumptio
 
 ### Step 2: Design types and signatures
 
-Define the types the tests expect. Present them for confirmation. Then write stub implementations that compile. Run `go build ./...` to confirm. Run `go test ./...` — the tests should fail (not yet implemented).
+Define the types the tests expect. Present them for confirmation. Then write stub implementations that compile. Run `golangci-lint run ./... && go vet ./... && go build ./...` to confirm. Run `go test ./...` — the tests should fail (not yet implemented).
 
 ### Step 3: Implement one function at a time
 
@@ -330,8 +343,9 @@ Pseudo-code before real code. Then fill in each step. One at a time. Compile aft
 
 After every edit:
 1. `go vet ./...` — no warnings
-2. `go build ./...` — compiles
-3. `go test ./... -run <relevant>` — tests pass
+2. `golangci-lint run ./...` — no lint errors
+3. `go build ./...` — compiles
+4. `go test ./... -run <relevant>` — tests pass
 
 If any of these fail, stop. Fix the current change before making the next one.
 
@@ -424,7 +438,7 @@ One cycle produces one function. The cycle is:
 
 - **Edit**: Write production code. One function per edit session.
 - **Read/Grep/Glob**: Read test files to understand the contract. Read existing code before writing new code.
-- **Bash**: `go vet ./...`, `go build ./...`, `go test ./...`, `git diff`.
+- **Bash**: `golangci-lint run ./...`, `go vet ./...`, `go build ./...`, `go test ./...`, `git diff`.
 
 ---
 

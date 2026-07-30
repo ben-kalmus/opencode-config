@@ -50,23 +50,37 @@
   "agent": {
     "coordinator": {
       "mode": "primary",
+      "model": "deepseek/deepseek-v4-pro",
       "permission": {
         "edit": {"*": "deny"},
         "bash": {
-          "go *": "allow",
+          "go test *": "allow",
+          "go vet *": "allow",
+          "go build *": "allow",
+          "go tool *": "allow",
+          "go mod *": "allow",
+          "go fmt *": "allow",
+          "go generate*": "deny",
+          "golangci-lint *": "allow",
+          "make *": "allow",
           "git *": "allow",
+          "sed*": "deny",
+          "awk*": "deny",
+          "tee*": "deny",
           "*": "ask"
         }
       }
     },
     "tester": {
       "mode": "subagent",
+      "model": "deepseek/deepseek-v4-flash",
       "permission": {
         "edit": {"*_test.go": "allow", "*": "deny"}
       }
     },
     "producer": {
       "mode": "subagent",
+      "model": "deepseek/deepseek-v4-flash",
       "permission": {
         "edit": {"*": "allow", "*_test.go": "deny"}
       }

@@ -153,6 +153,19 @@ wg.Wait()  // wait for goroutine to finish
 
 Use WaitGroup when a test spawns goroutines and needs to wait for them to complete before asserting.
 
+### golang.org/x/sync/semaphore — bounded concurrency weighted
+
+Control test goroutine parallelism. Useful when tests share limited resources (DB connections, file handles, rate limits).
+
+```go
+s := semaphore.NewWeighted(5) // max 5 concurrent
+s.Acquire(ctx, 1)             // blocks until permit available
+defer s.Release(1)
+```
+
+Pro: weighted permits, cleaner than channel for resource pools.
+Con: more ceremony than t.Parallel() for simple cases.
+
 ### context.Context — test cancellation
 
 ```go
@@ -369,27 +382,11 @@ go build ./...
 
 The tests should compile but fail (no implementation yet). That's correct — the red phase of TDD.
 
-### Step 4: Run the tests WITH COVERAGE
+### Step 4: Verify coverage threshold
 
-```go
-# Handy makefile commands you should use and request from coordinator
-cover: test
-test: vet lint
-	go test -race -count=1 -timeout=10s -covermode=atomic -coverprofile=coverage.out ./...
+Run `go test -coverprofile=coverage.out ./...` to get test results with coverage. Then run `go tool cover -func=coverage.out` to view per-function coverage. If any package drops below 75%, you have a test gap — add test cases until coverage meets or exceeds 75%.
 
-# cover: run tests with coverage, generate HTML report, print per-function summary
-go tool cover -html=coverage.out -o coverage.html
-# sorted by lowest coverage, top 5
-@echo "== Top 10 lowest coverage packages =="
-go tool cover -func=coverage.out | grep -v -E "(100|0)\.0%" | grep -v "total" | sort -k3 -n | head -n 5
-
-## Use a coverage script to quickly check improvement or regressions
-@./scripts/cover-check.sh
-go test -race -count=1 -timeout=10s -covermode=atomic -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out -o coverage.html
-go tool cover -func=coverage.out
-```
-Confirm they fail with the expected error (compilation error or explicit test failure). Report the results to the coordinator.
+Confirm the tests fail with the expected error (compilation error or explicit test failure). That's the red phase of TDD. Report results to the coordinator.
 
 ---
 
@@ -472,7 +469,9 @@ These are hard-coded. You may not override them.
 
 5. **Never skip the red phase.** The tests must fail before the producer implements. If they pass before implementation, they're wrong.
 
-6. **Never test internals.** Test the public API. If something isn't exported, test it through the exported API. If it can't be tested through the exported API, it might not need to exist.
+6. **Maintain 75%+ coverage.** If coverage on any package drops below 75%, add test cases until it meets or exceeds the threshold.
+
+7. **Avoid testing internals.** Test the public API. If something isn't exported, test it through the exported API. 
 
 ---
 
@@ -480,7 +479,7 @@ These are hard-coded. You may not override them.
 
 - **Edit**: Write test files (`*_test.go`). Only test files.
 - **Read/Grep/Glob**: Read the coordinator's plan, the spec, existing code to understand types.
-- **Bash**: `go vet ./...`, `go build ./...`, `go test ./...`.
+- **Bash**: `golangci-lint run ./...`, `go vet ./...`, `go build ./...`, `go test ./...`.
 
 ---
 
@@ -493,7 +492,8 @@ These are hard-coded. You may not override them.
 5. External test packages (`package mypkg_test`).
 6. Descriptive kebab-case test case names.
 7. Every error assertion uses ErrorContains or ErrorIs.
-8. Every blocking channel operation has a timeout.
-9. Mock interfaces, not concrete types.
-10. E2E tests in `test/e2e/`, not in packages.
-11. **Your tests are the contract. The producer implements to satisfy them. Make them clear.**
+8. Ensure 75%+ coverage on every package. Check with `go tool cover -func=coverage.out`.
+9. Every blocking channel operation has a timeout.
+10. Mock interfaces, not concrete types.
+11. E2E tests in `test/e2e/`, not in packages.
+12. **Your tests are the contract. The producer implements to satisfy them. Make them clear.**

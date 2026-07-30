@@ -10,11 +10,10 @@ These rules supplement the global AGENTS.md. They apply to all agents working on
 
 ## Testing
 
-- Use `testing.T` (stdlib only). No third-party test frameworks.
 - Table-driven tests with `t.Run` subtests.
+- Use `testify/require` for halting assertions, `testify/assert` for non-halting.
 - Test files go next to the implementation: `foo.go` → `foo_test.go`.
 - Test function naming: `TestPackage_Function` or `TestFunction`.
-- Use `t.Fatalf` for setup failures, `t.Errorf` for test assertions.
 
 ## Code Style
 
