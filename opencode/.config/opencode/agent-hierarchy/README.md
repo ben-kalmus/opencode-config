@@ -1,7 +1,6 @@
 # Agent Hierarchy: TDD-First Go Development
 
 Three-agent system for test-driven Go development.
-
 ## Architecture
 
 ```
