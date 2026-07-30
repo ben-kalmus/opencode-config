@@ -47,6 +47,31 @@
       "extensions": [".sh", ".bash", ".zsh", ".ksh"]
     }
   },
+  "agent": {
+    "coordinator": {
+      "mode": "primary",
+      "permission": {
+        "edit": {"*": "deny"},
+        "bash": {
+          "go *": "allow",
+          "git *": "allow",
+          "*": "ask"
+        }
+      }
+    },
+    "tester": {
+      "mode": "subagent",
+      "permission": {
+        "edit": {"*_test.go": "allow", "*": "deny"}
+      }
+    },
+    "producer": {
+      "mode": "subagent",
+      "permission": {
+        "edit": {"*": "allow", "*_test.go": "deny"}
+      }
+    }
+  },
   "permission": {
     "websearch": "allow",
     // safeguards
