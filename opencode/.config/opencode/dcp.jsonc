@@ -3,7 +3,7 @@
   "compress": {
     // Models degrade past 150k tokens. Best at 50-100k.
     "maxContextLimit": 150000,
-    "minContextLimit": 50000
+    "minContextLimit": 90000
     // "maxContextLimit": "80%",
     // Models get lazy past this point and increasingly expensive.
     // There is no good reason to push context past this point. Better to start new session.
