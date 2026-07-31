@@ -78,6 +78,24 @@ type ServiceID struct {
 }
 ```
 
+### Types — define the domain
+
+```go
+type Workflow[T any] struct {
+    Steps    []Step
+    State    StateMachine
+    Fetcher func(ctx context.Context) (T, error) // invariant: must be non-nil if Steps > 0
+}
+func NewWorkflow[T any](myConfig config.Service) *Dispatch[T] {
+    w := &Workflow[T]{}
+    w.cfg = myConfig
+    return w
+}
+func (w *Workflow[T]) Run(ctx context.Context, steps ...worker[T]) (T, error) {
+```
+Golang generics allow perfectly re-usable, generic code, ensuring scope is clear and simple.
+
+
 ### sync.WaitGroup — await N goroutines
 
 ```go
