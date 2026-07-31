@@ -48,6 +48,12 @@
     }
   },
   "agent": {
+    "plan": {
+      "color": "#1E90FF"
+    },
+    "build": {
+      "color": "#8B0000"
+    },
     "coordinator": {
       "mode": "primary",
       "model": "deepseek/deepseek-v4-pro",
