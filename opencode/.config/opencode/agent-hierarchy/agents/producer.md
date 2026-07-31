@@ -370,18 +370,41 @@ case <-DecisionAffectsUser:
 
 ## WRITING PRINCIPLES
 
+### Guard clauses first
+
+Every `if` decides whether to continue. When its condition fails, exit the flow immediately: return, continue, or break. The happy path stays on the left edge of the function, readable top to bottom. An `else` that follows an exiting `if` is dead structure; drop it and outdent.
+
+```go
+func (s *Store) Save(job *Job) error {
+    if job == nil {
+        return ErrNilJob
+    }
+    if err := db.Validate(job); err != nil {
+        return err
+    }
+    return db.Save(job)
+}
+```
+
+In a loop, exit with continue or break instead of wrapping the body:
+
+```go
+for _, f := range files {
+    if f.IsDir() {
+        continue
+    }
+    if strings.HasPrefix(f.Name(), ".") {
+        continue
+    }
+    process(f)
+}
+```
+
+The one else worth keeping: when both branches assign to the same value (`if x { v = a } else { v = b }`). That else is necessary. Everything else guards.
+
 ### One thing per function
 
 Each function does exactly one thing. If a function does two things, split it.
-
-### Early return, no nesting
-
-```go
-if err != nil {
-    return nil, fmt.Errorf("step: %w", err)
-}
-// logic at the top level
-```
 
 ### Zero-dependency by default
 

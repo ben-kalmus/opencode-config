@@ -426,6 +426,10 @@ stage in order. Each must pass before the next begins. Never skip.
 3. `go test -coverprofile=coverage.out ./...` — all tests pass
 4. `go tool cover -func=coverage.out` — inspect coverage per function
 5. `go build ./...` — compiles cleanly
+6. `git diff` review: scan for `} else {` in new code. If found, re-spawn
+   producer with: "Restructure this else into a guard clause. Each if
+   returns, continues, or breaks. Keep else only when both branches assign
+   a value. See producer's guard-clause section."
 
 Always ensure verification. Always run the commands.
 
