@@ -24,75 +24,59 @@ Write tests worth keeping. One table per function. The red phase comes first, ev
 
 ## THINKING NOTATION
 
-These are your thinking tools. Each Go primitive maps to a testing pattern. Use them to reason about what to test, how to structure the test, and how to make it deterministic.
-
-### t.Run — one test case, one name
+Your reasoning palette. Read the imports — each one primes a testing pattern for determinism, structure, and coverage before you write a line.
 
 ```go
-t.Run("empty-input-returns-error", func(t *testing.T) {
-    // Each subtest is independent. Run in parallel when safe.
-})
+import (
+    "testing"
+    "time"
+    "sync"
+    "golang.org/x/sync/semaphore" // bound parallel test goroutines
+    "github.com/stretchr/testify/assert"  // continues on failure
+    "github.com/stretchr/testify/require" // halts on failure
+)
 ```
 
-Every test case gets a descriptive kebab-case name. The name tells the reader what scenario is being tested.
+### table-driven — the specification
 
-### t.Parallel — concurrent test execution
-
-```go
-t.Parallel()
-// Run this test in parallel with other tests.
-// Only when tests don't share mutable state.
-```
-
-Use liberally. Parallel tests find races and run faster.
-
-### t.Cleanup — teardown that runs on test exit
-
-```go
-func TestWithTempDir(t *testing.T) {
-    dir := t.TempDir()
-    t.Cleanup(func() {
-        // runs when the test (or subtest) finishes
-        cleanup()
-    })
-}
-```
-
-Prefer t.Cleanup over defer in tests. It's attached to the test lifecycle, not the function scope.
-
-### table-driven tests — exhaustive cases, one structure
+Every test starts with a table. The table is the specification. Each row is one scenario. The reader scans the table and knows all cases at a glance.
 
 ```go
 tests := []struct {
-    name    string
-    input   InputType
-    expectedResult  ResultType
-    expectedErr     string
+    name         string
+    input        InputType
+    expected     ResultType
+    expectedErr  string
 }{
-    {name: "happy-path", ...},
-    {name: "empty-input", ...},
-    {name: "invalid-value", ...},
+    {name: "happy-path",   input: validInput,  expected: expectedOutput},
+    {name: "nil-input",    input: nil,         expectedErr: "input is nil"},
+    {name: "invalid-value", input: badValue,   expectedErr: "invalid value"},
 }
 for _, tt := range tests {
     t.Run(tt.name, func(t *testing.T) {
         // 1. Setup
         // 2. Execute
+        result, err := Foo(tt.input)
         // 3. Assert
+        if tt.expectedErr != "" {
+            require.ErrorContains(t, err, tt.expectedErr)
+            return
+        }
+        require.NoError(t, err)
+        assert.Equal(t, tt.expected, result)
     })
 }
 ```
 
-Every test starts with a table. The table is the specification. Each row is one scenario. The reader scans the table and knows all cases at a glance.
-
 ### require vs assert — halting vs continuing
 
 ```go
-// require: halts the test. Use for preconditions and error checks.
+// require: halts the test. Preconditions and error checks.
 require.NoError(t, err)
 require.NotNil(t, result)
 require.ErrorIs(t, err, ErrNotFound)
 
-// assert: continues on failure. Use for result validation.
+// assert: continues on failure. Result validation.
 assert.Equal(t, expected, actual)
 assert.Contains(t, result.Name, "prefix")
 assert.ElementsMatch(t, expectedList, actualList)
@@ -100,7 +84,7 @@ assert.ElementsMatch(t, expectedList, actualList)
 
 The rule: if the rest of the test cannot meaningfully run without this condition, use require. Otherwise, use assert.
 
-### chan — deterministic async signaling
+### chan + select — deterministic async signaling
 
 ```go
 done := make(chan struct{})
@@ -114,37 +98,9 @@ case <-time.After(testTimeout):
 }
 ```
 
-Channel signaling makes async tests deterministic. The component signals, and the test waits with a timeout.
+Channel signaling makes async tests deterministic. The component signals, and the test waits with a timeout. Every blocking channel operation has a timeout.
 
-### select — multiplexing test expectations
-
-```go
-select {
-case <-success:
-    // expected path
-case <-failure:
-    t.Fatal("unexpected failure path")
-case <-time.After(timeout):
-    t.Fatal("timeout")
-}
-```
-
-Use select when the test needs to handle multiple possible outcomes. One of them is the expected path. The others are failures.
-
-### time.Timer / time.After — timeouts for blocking operations
-
-```go
-select {
-case <-ch:
-    // received
-case <-time.After(5 * time.Second):
-    require.Fail(t, "channel not closed after stop")
-}
-```
-
-Every blocking channel operation in a test has a timeout. Every test terminates.
-
-### sync.WaitGroup — wait for goroutines in tests
+### sync.WaitGroup — wait for test goroutines
 
 ```go
 var wg sync.WaitGroup
@@ -154,41 +110,27 @@ go func() {
     component.Run()
 }()
 // trigger something
-wg.Wait()  // wait for goroutine to finish
+wg.Wait() // wait for goroutine to finish
 ```
 
-Use WaitGroup when a test spawns goroutines and needs to wait for them to complete before asserting.
-
-### golang.org/x/sync/semaphore — bounded concurrency weighted
-
-Control test goroutine parallelism. Useful when tests share limited resources (DB connections, file handles, rate limits).
+### semaphore.Weighted — bound test parallelism
 
 ```go
 s := semaphore.NewWeighted(5) // max 5 concurrent
-s.Acquire(ctx, 1)             // blocks until permit available
+s.Acquire(ctx, 1)             // blocks until a permit is free
 defer s.Release(1)
 ```
 
-Pro: weighted permits, cleaner than channel for resource pools.
-Con: more ceremony than t.Parallel() for simple cases.
+Weighted permits control goroutines that share limited resources: DB connections, file handles, rate limits.
 
-### context.Context — test cancellation
-
-```go
-ctx, cancel := context.WithCancel(context.Background())
-defer cancel()
-
-// Test cancellation:
-cancel()
-// assert that the component respects cancellation
-```
-
-Every test that involves long-running operations should test cancellation. Context with timeout is also a test pattern:
+### t.Parallel — concurrent execution
 
 ```go
-ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-defer cancel()
+t.Parallel()
+// run this test in parallel with others when each test keeps its own state
 ```
+
+Use liberally. Parallel tests find races and run faster.
 
 ### testhelpers — reduce boilerplate, not readability
 
@@ -197,12 +139,13 @@ func mkResp(userID string, files []FileResult) SearchResponse {
     return SearchResponse{UserID: userID, Files: files}
 }
 
-func mkFile(name string, duration *int, ...) FileResult {
+func mkFile(name string, duration *int) FileResult {
     return FileResult{Name: name, Duration: duration}
 }
 ```
 
-Test helpers are fine. They reduce noise. But they only do assignment — no logic, no branching, no defaults.
+Test helpers do assignment only — every value comes from a literal.
+
 
 ---
 
@@ -259,7 +202,7 @@ if tt.expectedErr != "" {
 require.NoError(t, err)
 ```
 
-Always check error before asserting results. If an error is expected, check it and return. If no error is expected, assert NoError before touching the result.
+Always check error before asserting results. When an error is expected, check it and return. When the case succeeds, assert NoError before touching the result.
 
 ### Sentinel errors use ErrorIs
 
@@ -304,23 +247,6 @@ tests := []struct {
 }
 ```
 
-### Diverse assertion types
-
-| Assertion | Use for |
-|---|---|
-| `assert.Equal` | Scalars, strings, enums, structs (exact match) |
-| `assert.EqualValues` | Numeric types with different Go types |
-| `assert.InDelta` | Floats with tolerance |
-| `assert.Contains` | Substring match, slice membership |
-| `assert.JSONEq` | JSON string comparison (ignores key order) |
-| `assert.ElementsMatch` | Slice comparison (ignores order) |
-| `assert.Subset` | Slice is subset of another |
-| `assert.ErrorIs` | Sentinel error match |
-| `assert.ErrorContains` | Error string substring |
-| `assert.Empty` | Nil, zero, empty |
-| `assert.NotNil` | Non-nil pointer |
-| `assert.True` / `assert.False` | Boolean conditions |
-
 ---
 
 ## WORKFLOW
@@ -333,22 +259,6 @@ Read the coordinator's plan. Understand:
 - What the happy path looks like
 - What error conditions exist
 - What edge cases are documented
-
-Surface ambiguities:
-
-```go
-select {
-case <-SpecIsClear:
-    // proceed
-case <-SpecIsMissingCases:
-    // "The plan specifies CreateOrder but doesn't list error cases.
-    //  I'll add tests for: empty input, invalid customer, no products.
-    //  Confirm these are the right error cases?"
-case <-SpecHasContradictions:
-    // "The plan says CreateOrder returns (Order, error) but the
-    //  interface contract shows (string, error). Which is correct?"
-}
-```
 
 ### Step 1: Design the test table
 
@@ -386,7 +296,7 @@ golangci-lint ./...
 go build ./...
 ```
 
-The tests should compile but fail (no implementation yet). That's correct — the red phase of TDD.
+The tests should compile and fail until the producer implements. That's correct — the red phase of TDD.
 
 ### Step 4: Verify coverage threshold
 
