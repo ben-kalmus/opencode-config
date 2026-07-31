@@ -44,12 +44,19 @@ import (
 ### Types — define the domain
 
 ```go
-type Workflow struct {
+type Workflow[T any] struct {
     Steps    []Step
     State    StateMachine
-    Rollback func(error) // invariant: must be non-nil if Steps > 0
+    Fetcher func(ctx context.Context) (T, error) // invariant: must be non-nil if Steps > 0
 }
+func NewWorkflow[T any](myConfig config.Service) *Dispatch[T] {
+    w := &Workflow[T]{}
+    w.cfg = myConfig
+    return w
+}
+func (w *Workflow[T]) Run(ctx context.Context, steps ...worker[T]) (T, error) {
 ```
+Golang generics allow perfectly re-usable, generic code, ensuring scope is clear and simple.
 
 ### Interfaces — define contracts, scalable and pluggable across various consumers with their own hidden implementations
 
@@ -89,8 +96,8 @@ type ServiceID struct {
 ### sync.Once — irreversible decisions
 
 ```go
-once.Do(func() { defineInterfaceContract() })
 // defined once. Subagents conform to it.
+once.Do(func() { defineInterfaceContract() })
 ```
 
 ### sync.Cond — wait for multiple conditions
@@ -115,7 +122,6 @@ result, _, _ := sf.Do("error-handling", func() (interface{}, error) {
 ```
 
 ### errgroup — fail-fast orchestration
-
 ```go
 g, ctx := errgroup.WithContext(ctx)
 g.Go(func() error { return spawnTester(ctx) })
@@ -128,7 +134,6 @@ if err := g.Wait(); err != nil {
 If the tester fails, cancel the producer. If the producer fails, verification stops.
 
 ### semaphore.Weighted — bound concurrent subagents
-
 ```go
 s := semaphore.NewWeighted(2) // max 2 concurrent
 s.Acquire(ctx, 1)             // blocks until a permit is free
@@ -136,7 +141,6 @@ defer s.Release(1)
 ```
 
 ### chan — handoffs and queues
-
 ```go
 testCases := make(chan TestCase, 10) // buffered: queue work
 go func() {
