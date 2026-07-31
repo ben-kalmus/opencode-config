@@ -13,6 +13,9 @@ stow: init backup
 		echo "Stowing $$pkg..."; \
 		stow -v -R -t $(HOME) $$pkg; \
 	done
+	# special stage for CLAUDE.md (sync)
+	@echo "symlinked AGENTS.md ~ CLAUDE.md"
+	@ln -snf ~/repos/opencode-config/opencode/.config/opencode/AGENTS.md ~/.claude/CLAUDE.md
 
 # Back up only genuine collisions: a real file standing under real directories.
 # Anything living under a symlink belongs to stow's subtree and is left alone.
