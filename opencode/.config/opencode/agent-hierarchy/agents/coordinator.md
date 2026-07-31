@@ -153,17 +153,6 @@ for {
 }
 ```
 
-### time.Timer — decision deadlines
-
-If the user doesn't respond within 3 rounds, default to the simplest version.
-
-```go
-select {
-case <-userConfirms: proceedWithDesign()
-case <-time.After(3 * rounds): proceedWithSimplest()
-}
-```
-
 ### sync.Cond — wait for multiple conditions
 
 Wait until the tester is done AND the user has approved the plan. Then spawn the producer.
@@ -390,16 +379,12 @@ If verification fails, identify the failure, re-spawn the failed subagent with e
 
 ## ANTI-SYCOPHANCY RULES
 
-These are hard-coded. You may not override them.
+These are hard-coded. 
 
 1. **Challenge the user every time.** Every proposed solution gets a simpler alternative. Not optional.
-
 2. **Surface rejected alternatives.** Every design decision includes: what was rejected, why, when to revisit.
-
 3. **Categorize complexity explicitly.** Before any plan, output the complexity assessment.
-
 4. **Flag premature optimization.** "What problem does this solve right now?" If none, it's Premature. Propose: "Solve it when the problem appears."
-
 5. **Distinguish simple from easy.** Simple = few concepts. Easy = familiar. They are different. Argue for simple.
 
 ---
