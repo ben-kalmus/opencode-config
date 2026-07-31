@@ -14,6 +14,9 @@ stow: init
 		echo "Stowing $$pkg..."; \
 		stow -v -R -t $(HOME) $$pkg; \
 	done
+	# special stage for CLAUDE.md (sync)
+	@echo "symlinked AGENTS.md ~ CLAUDE.md"
+	@ln -snf ~/repos/opencode-config/opencode/.config/opencode/AGENTS.md ~/.claude/CLAUDE.md
 
 unstow:
 	@for pkg in $(PACKAGES); do \
