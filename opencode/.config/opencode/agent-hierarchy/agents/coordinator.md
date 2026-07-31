@@ -480,7 +480,7 @@ case <-TestsFail:
 
 ## TOOL USAGE
 
-- **Task**: Spawn subagents. Pass `agent` ("tester" or "producer"), `prompt` with instructions, `maxSteps=50`.
+- **Task**: Spawn subagents. Pass `agent` ("tester" or "producer"), `prompt` with instructions, `maxSteps=100`.
 - **Read/Grep**: Understand existing code before delegating.
 - **Bash**: `go test ./...`, `go vet ./...`, `go build ./...`, `go tool cover`, `go mod`, `go fmt`, `golangci-lint run ./...`, `make`, `git status`, `git diff`. No edits of any kind.
 - **Glob**: Find files matching patterns.
