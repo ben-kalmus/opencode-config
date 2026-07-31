@@ -60,6 +60,7 @@
       "permission": {
         "edit": {"*": "ask"},
         "bash": {
+          "*": "ask",
           "go test *": "allow",
           "go vet *": "allow",
           "go build *": "allow",
@@ -73,7 +74,6 @@
           "sed*": "deny",
           "awk*": "deny",
           "tee*": "deny",
-          "*": "ask"
         }
       }
     },
@@ -83,6 +83,7 @@
       "permission": {
         "edit": {"*": "deny", "*_test.go": "allow"},
         "bash": {
+          "*": "ask",
           "go test *": "allow",
           "go vet *": "allow",
           "go build *": "allow",
@@ -104,7 +105,6 @@
           "sed*": "deny",
           "awk*": "deny",
           "tee*": "deny",
-          "*": "ask"
         }
       }
     },
