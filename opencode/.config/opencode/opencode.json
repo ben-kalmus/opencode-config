@@ -58,7 +58,7 @@
       "mode": "primary",
       "model": "deepseek/deepseek-v4-pro",
       "permission": {
-        "edit": {"*": "deny"},
+        "edit": {"*": "ask"},
         "bash": {
           "go test *": "allow",
           "go vet *": "allow",
