@@ -75,14 +75,62 @@
       "mode": "subagent",
       "model": "deepseek/deepseek-v4-flash",
       "permission": {
-        "edit": {"*_test.go": "allow", "*": "deny"}
+        "edit": {"*": "deny", "*_test.go": "allow"},
+        "bash": {
+          "go test *": "allow",
+          "go vet *": "allow",
+          "go build *": "allow",
+          "go tool *": "allow",
+          "go mod *": "allow",
+          "go fmt *": "allow",
+          "go generate*": "deny",
+          "golangci-lint *": "allow",
+          "git *": "deny",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "git blame*": "allow",
+          "git grep*": "allow",
+          "git ls-files*": "allow",
+          "git rev-parse*": "allow",
+          "git shortlog*": "allow",
+          "sed*": "deny",
+          "awk*": "deny",
+          "tee*": "deny",
+          "*": "ask"
+        }
       }
     },
     "producer": {
       "mode": "subagent",
       "model": "deepseek/deepseek-v4-flash",
       "permission": {
-        "edit": {"*": "allow", "*_test.go": "deny"}
+        "edit": {"*": "allow", "*_test.go": "deny"},
+        "bash": {
+          "go test *": "allow",
+          "go vet *": "allow",
+          "go build *": "allow",
+          "go tool *": "allow",
+          "go mod *": "allow",
+          "go fmt *": "allow",
+          "go generate*": "deny",
+          "golangci-lint *": "allow",
+          "git *": "deny",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "git blame*": "allow",
+          "git grep*": "allow",
+          "git ls-files*": "allow",
+          "git rev-parse*": "allow",
+          "git shortlog*": "allow",
+          "sed*": "deny",
+          "awk*": "deny",
+          "tee*": "deny",
+          "*": "ask"
+        }
       }
     }
   },
