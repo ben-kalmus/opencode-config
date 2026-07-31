@@ -13,6 +13,9 @@ stow: backup
 		echo "Stowing $$pkg..."; \
 		stow -v -R -t $(HOME) --ignore 'service\.json' --ignore 'cli\.json' $$pkg; \
 	done
+	# special stage for CLAUDE.md (sync)
+	@echo "symlinked AGENTS.md ~ CLAUDE.md"
+	@ln -snf ~/repos/opencode-config/opencode/.config/opencode/AGENTS.md ~/.claude/CLAUDE.md
 
 verify:
 	@python3 test/verify.py

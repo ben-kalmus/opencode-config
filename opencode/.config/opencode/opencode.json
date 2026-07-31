@@ -1,8 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "websearch": {
-    "provider": "exa"
-  },
+  // "websearch": {
+  //   "provider": "exa",
+  // },
   "mcp": {
     "servers": {
       // "browser-auth": {
@@ -13,50 +13,7 @@
       "browser-lite": {
         "disabled": true, // careful with this, HUGE CONTEXT DRAIN
         "type": "remote",
-        "url": "http://opti.local:8931/mcp"
-      },
-      // Chrome CDP via Playwright MCP. Wrapper auto-starts Chrome if :9222 is down.
-      // Manual run: google-chrome-stable --remote-debugging-port=9222 --user-data-dir=$HOME/.hermes/chrome-debug --no-first-run --no-default-browser-check &
-      // Stop wrapper-started Chrome: sh ~/.config/opencode/scripts/chrome-cdp-mcp.sh stop
-      // Toggle with "disabled" (no "enable" flag in V2 schema).
-      "chrome-cdp": {
-        "disabled": true,
-        "type": "local",
-        "command": [
-          "sh",
-          "-c",
-          "exec $HOME/.config/opencode/scripts/chrome-cdp-mcp.sh"
-        ]
-      },
-      // Camoufox Docker (REST on :9377) via camofox-mcp bridge. 47 tools, keep disabled unless needed.
-      // Verify server: curl -s http://localhost:9377/health
-      "camofox": {
-        "disabled": true,
-        "type": "local",
-        "command": [
-          "npx",
-          "-y",
-          "camofox-mcp@latest"
-        ],
-        "environment": {
-          "CAMOFOX_URL": "http://localhost:9377"
-        }
-      },
-      // foxbrowser: separate Firefox instance with profile copy. Launches an isolated
-      // Firefox with your cookies, logins, and extensions from the locked profile
-      // (auto-copied to temp). Your running Firefox stays untouched.
-      // Profile: ~/.config/mozilla/firefox/lrxn5unl.default-release
-      "foxbrowser": {
-        "disabled": true,
-        "type": "local",
-        "command": [
-          "npx",
-          "-y",
-          "foxbrowser"
-        ],
-        "environment": {
-          "FOXBROWSER_PROFILE": "/home/benkalmus/.config/mozilla/firefox/lrxn5unl.default-release"
-        }
+        "url": "http://opti.local:8931/mcp",
       },
       "engram": {
         "disabled": true,
@@ -67,42 +24,9 @@
         ],
         "type": "local"
       },
-      "trvl": {
-        "disabled": true,
-        "type": "local",
-        "command": [
-          "trvl",
-          "mcp"
-        ]
-      },
-      "trip-search": {
-        "disabled": true,
-        "type": "local",
-        "command": [
-          "/home/benkalmus/work/trip-search-mcp/.venv/bin/python",
-          "-m",
-          "trip_search_mcp.server"
-        ],
-        "environment": {
-          "SERPAPI_KEY": "{env:SERPAPI_KEY}"
-        }
-      },
-      "serena": {
-        "type": "local",
-        "command": [
-          "uvx",
-          "--from",
-          "git+https://github.com/oraios/serena",
-          "serena",
-          "start-mcp-server",
-          "--context",
-          "ide",
-          "--open-web-dashboard",
-          "False"
-        ]
-      }
     }
   },
+
   // V2 accepts "lsp" but ignores it: no language servers run, no LSP tools or diagnostics.
   // Use project lint, typecheck, or compiler commands instead.
   // "lsp": {
@@ -121,6 +45,7 @@
   // },
   // Custom agents (coordinator, auditor, tester, producer) live in agents/ as markdown files.
   // Their mode, steps, and permissions ride in the frontmatter. Only builtin overrides stay here.
+
   "agents": {
     "explore": {
       "permissions": [
@@ -128,7 +53,7 @@
           "action": "external_directory",
           "resource": "*",
           "effect": "allow"
-        }
+        },
       ]
     },
     "plan": {
@@ -136,81 +61,59 @@
     },
     "build": {
       "color": "#8B0000"
-    }
+    },
   },
-  // Magic Context owns context management. Native compaction would double-compress.
-  "compaction": {
-    "auto": false
-  },
+
+
   "plugins": [
-    "/home/benkalmus/work/opencode-scrub-session-plugin",
-    "@cortexkit/opencode-magic-context@latest",
-    "opencode-handoff"
+    "@tarquinen/opencode-dcp@latest",
   ],
   "providers": {
-    "openrouter": {
-      "package": "@opencode/ai/providers/openrouter",
+    "enablers": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "name": "Enablers",
+      "env": ["ENABLERS_JWT"],
       "settings": {
-        "apiKey": "{env:OPENROUTER_API_KEY}",
-        "baseURL": "https://openrouter.ai/api/v1"
+        "apiKey": "{env:ENABLERS_JWT}",
+        "baseURL": "https://inference.api.enablers.algolia.net/v1"
       },
       "models": {
-        "deepseek/deepseek-v4-flash": {
-          "name": "DeepSeek V4 Flash 0423",
+        "xlarge": {
+          "name": "Xlarge - GLM-5.3-Flash",
           "limit": {
-            "context": 1048576,
-            "output": 65536
+            "context": 400000,
+            "output": 262144
           }
         },
-        "anthropic/claude-haiku-5.5": {
-          "name": "Claude Haiku 5.5",
-          "body": {
-            "cache_control": {
-              "type": "ephemeral"
-            }
+        "large": {
+          "name": "Large",
+          "limit": {
+            "context": 400000,
+            "output": 262144
           }
         }
+
       }
     },
+
     "llama-cpp": {
       "package": "@opencode/ai/providers/openai-compatible",
       "settings": {
         "apiKey": "noop",
-        "baseURL": "http://cachyos.local:9900/v1"
+        "baseURL": "http://localhost:9900/v1"
       },
       "models": {
-        "qwen-3.6-35b-a3b": {
-          "name": "Qwen 3.6 35B A3B MoE",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
-        "qwen-3.6-35b-q4-mtp": {
-          "name": "qwen-3.6-35b-q4-mtp",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
         "qwen-3.6-27b": {
           "name": "Qwen 3.6 27B",
           "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
-        "qwen-3.6-27b-fable": {
-          "name": "qwen-3.6-27b-fable",
-          "limit": {
-            "context": 80000,
+            "context": 65000,
             "output": 10000
           }
         },
         "qwen-3.8-27b-q4": {
           "name": "Qwen 3.8 27B Q4",
           "limit": {
-            "context": 80000,
+            "context": 65000,
             "output": 10000
           },
           "settings": {
@@ -246,183 +149,11 @@
               }
             }
           ]
-        },
-        "ornith-1.0": {
-          "name": "ornith-1.0",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
-        "qwen-3.8-27b-vllm": {
-          "name": "Qwen 3.8 27B (vLLM)",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        }
-      }
-    },
-    // Discount reseller, unverified: fingerprint a model before trusting it.
-    "routerhub": {
-      "name": "RouterHub",
-      "package": "@opencode/ai/providers/openai",
-      "settings": {
-        "apiKey": "{env:ROUTERHUB_API_KEY}",
-        "baseURL": "https://routerhub.si/v1",
-        "timeout": 600000,
-        "headerTimeout": 600000,
-        "chunkTimeout": 600000
-      },
-      "models": {
-        "gpt-6.1-sol": {
-          "name": "GPT-6.1 Sol",
-          "limit": {
-            "context": 1050000,
-            "output": 128000
-          }
-        },
-        "gpt-6-astra": {
-          "name": "GPT-6 Astra",
-          "limit": {
-            "context": 1050000,
-            "output": 128000
-          }
-        },
-        "codex-auto-review": {
-          "name": "Codex Auto Review"
-        },
-        "gpt-5.5": {
-          "name": "GPT-5.5",
-          "limit": {
-            "context": 1050000,
-            "output": 128000
-          }
-        },
-        "gpt-5.6-sol": {
-          "name": "GPT-5.6 Sol",
-          "limit": {
-            "context": 1050000,
-            "output": 128000
-          }
-        },
-        "gpt-5.6-terra": {
-          "name": "GPT-5.6 Terra",
-          "limit": {
-            "context": 1050000,
-            "output": 128000
-          }
-        },
-        "gpt-6-sol": {
-          "name": "GPT-6 Sol",
-          "limit": {
-            "context": 1050000,
-            "output": 128000
-          }
-        },
-        "claude-fable-5-1": {
-          "name": "Claude Fable 5.1",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-fable-5": {
-          "name": "Claude Fable 5",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-haiku-4-5-20251001": {
-          "name": "Claude Haiku 4.5 20251001",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          }
-        },
-        "claude-opus-4-6": {
-          "name": "Claude Opus 4.6",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-opus-4-7": {
-          "name": "Claude Opus 4.7",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-opus-4-8": {
-          "name": "Claude Opus 4.8",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-opus-5": {
-          "name": "Claude Opus 5",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-opus-5-5": {
-          "name": "Claude Opus 5.5",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-sonnet-5": {
-          "name": "Claude Sonnet 5",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "claude-sonnet-5-5": {
-          "name": "Claude Sonnet 5.5",
-          "package": "@opencode/ai/providers/anthropic-compatible",
-          "limit": {
-            "context": 1000000,
-            "output": 128000
-          }
-        },
-        "deepseek-v4.1-flash": {
-          "name": "DeepSeek V4.1 Flash",
-          "package": "@opencode/ai/providers/openai-compatible"
-        },
-        "glm-5.3": {
-          "name": "GLM 5.3",
-          "package": "@opencode/ai/providers/openai-compatible"
-        },
-        "glm-5.3-flash": {
-          "name": "GLM 5.3 Flash",
-          "package": "@opencode/ai/providers/openai-compatible"
         }
       }
     }
   },
+
   // Glob rules: * matches everything including /. ? matches exactly one char. Last matching rule wins.
   // One V2 pattern covers all depths, so per-tool single rules replace the old per-path walls.
   "permissions": [
@@ -621,6 +352,7 @@
       "action": "shell",
       "resource": "rm -fr *",
       "effect": "ask"
-    }
+    },
   ]
+
 }
