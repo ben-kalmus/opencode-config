@@ -361,10 +361,10 @@ mkFile("song.mp3", new(int), new(int))
 
 ### Test-wide timeouts
 
-Use a package-level timeout variable for test waits:
+Use shortest possible but reasonable, test-level timeout variable for test waits:
 
 ```go
-var testTimeout = 5 * time.Second
+var testTimeout = 500 * time.Millisecond
 ```
 
 ---

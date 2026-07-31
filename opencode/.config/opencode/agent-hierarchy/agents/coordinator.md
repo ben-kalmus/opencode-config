@@ -51,16 +51,40 @@ type Workflow struct {
 }
 ```
 
-### Interfaces — define contracts
+### Interfaces — define contracts, scalable and pluggable across various consumers with their own hidden implementations
+
+For complex interlinked processes, you can stack interfaces to solve any generic problem with interfaces consuming interfaces and producing interface results:
 
 ```go
-type Storage interface {
-    Get(key string) (Value, error)
-    Put(key string, val Value) error
+type ServiceProcessor interface {
+    SomeProcess(ctx context.Context, customID Identifier) (ResultReturner, error)
+    Name() string
+    Status(ctx context.Context, customID Identifier) error
+    Ping(ctx context.Context) error
+}
+
+// The custom key, which allows routing to the right Identifier consumer in ServiceProcessor
+type Identifier interface {
+    Type() string
+    ToID() ServiceID
+}
+
+// A custom result returner that handles conversions between different processors, into one common result set for service.
+type ResultReturner interface {
+    ID() Identifier
+    ToServiceResult() ServiceResult
+}
+
+type ServiceResult struct {
+    Results []Results
+    Errors []error  // collects all errors within the custom service processor
+}
+
+type ServiceID struct {
+    Key string
+    Value string
 }
 ```
-
-The interface contract is defined once. Subagents conform to it.
 
 ### sync.Once — irreversible decisions
 
@@ -132,8 +156,9 @@ for tc := range testCases {
 ```go
 var wg sync.WaitGroup
 for _, task := range tasks {
-    wg.Add(1)
-    go func(t Task) { defer wg.Done(); process(t) }(task)
+    wg.Go(func(){
+	process(task) 
+    })
 }
 wg.Wait()
 ```

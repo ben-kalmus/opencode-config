@@ -43,16 +43,50 @@ import (
 
 Convention: every field touched by multiple goroutines is documented as "protected by mu."
 
+### Interfaces — define contracts, scalable and pluggable across various consumers with their own hidden implementations
+
+For complex interlinked processes, you can stack interfaces to solve any generic problem with interfaces consuming interfaces and producing interface results:
+
+```go
+type ServiceProcessor interface {
+    SomeProcess(ctx context.Context, customID Identifier) (ResultReturner, error)
+    Name() string
+    Status(ctx context.Context, customID Identifier) error
+    Ping(ctx context.Context) error
+}
+
+// The custom key, which allows routing to the right Identifier consumer in ServiceProcessor
+type Identifier interface {
+    Type() string
+    ToID() ServiceID
+}
+
+// A custom result returner that handles conversions between different processors, into one common result set for service.
+type ResultReturner interface {
+    ID() Identifier
+    ToServiceResult() ServiceResult
+}
+
+type ServiceResult struct {
+    Results []Results
+    Errors []error  // collects all errors within the custom service processor
+}
+
+type ServiceID struct {
+    Key string
+    Value string
+}
+```
+
 ### sync.WaitGroup — await N goroutines
 
 ```go
 var wg sync.WaitGroup
 for i := 0; i < n; i++ {
-    wg.Add(1)
-    go func() {
+    wg.Go(func() {
         defer wg.Done()
         work()
-    }()
+    })
 }
 wg.Wait() // every Add has a matching Done
 ```
