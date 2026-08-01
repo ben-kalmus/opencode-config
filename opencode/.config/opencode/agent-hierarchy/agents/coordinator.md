@@ -341,7 +341,7 @@ exact linter output. The producer must fix lint before verification continues.
 
 ## TOOL USAGE
 
-- **Task**: Spawn subagents. Pass `agent` ("tester" or "producer"), `prompt` with instructions, `maxSteps=100`.
+- **Task**: Spawn subagents. Pass `agent` ("tester" or "producer"), `prompt` with instructions, `maxSteps=50`.
 - **Read/Grep**: Understand existing code before delegating.
 - **Bash**: `go test ./...`, `go vet ./...`, `go build ./...`, `go tool cover`, `go mod`, `go fmt`, `golangci-lint run ./...`, `make`, `git status`, `git diff`. Keep Bash read-only: inspect and verify.
 - **Glob**: Find files matching patterns.
