@@ -60,7 +60,8 @@
       "permission": {
         "edit": {"*": "ask"},
         "bash": {
-          "*": "ask",
+          "*": "allow",
+          "ls *": "allow",
           "go test *": "allow",
           "go vet *": "allow",
           "go build *": "allow",
@@ -84,6 +85,8 @@
         "edit": {"*": "deny", "*_test.go": "allow"},
         "bash": {
           "*": "ask",
+          "ls *": "allow",
+          "grep": "allow",
           "go test *": "allow",
           "go vet *": "allow",
           "go build *": "allow",
@@ -114,13 +117,16 @@
       "permission": {
         "edit": {"*": "allow", "*_test.go": "deny"},
         "bash": {
-          "go test *": "allow",
-          "go vet *": "allow",
-          "go build *": "allow",
-          "go tool *": "allow",
-          "go mod *": "allow",
-          "go fmt *": "allow",
+          "*": "ask",
+          "ls *": "allow",
+          "go test*": "allow",
+          "go vet*": "allow",
+          "go build*": "allow",
+          "go tool*": "allow",
+          "go mod*": "allow",
+          "go fmt*": "allow",
           "go generate*": "deny",
+          "go *": "deny",
           "golangci-lint *": "allow",
           "git *": "deny",
           "git status*": "allow",
@@ -134,8 +140,7 @@
           "git shortlog*": "allow",
           "sed*": "deny",
           "awk*": "deny",
-          "tee*": "deny",
-          "*": "ask"
+          "tee*": "deny"
         }
       }
     }
@@ -174,7 +179,7 @@
   },
   "plugin": [
     "./plugins/caveman/plugin.js",
-    "./plugins/smartsnip.ts",
+    // "./plugins/smartsnip.ts",
     "@tarquinen/opencode-dcp@latest",
     "./plugin/context-usage.ts",
   ],
@@ -231,21 +236,21 @@
         "baseURL": "https://api.deepseek.com"
       },
       "models": {
-        "deepseek-chat": {
+        "deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "deepseek-v4-flash": {
           "name": "DeepSeek V4 Flash",
           "limit": {
             "context": 1048576,
             "output": 65536
           }
         },
-        "deepseek-reasoner": {
-          "name": "DeepSeek V4 Pro",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        }
-      }
+      },
     },
 
     "llama-cpp": {
