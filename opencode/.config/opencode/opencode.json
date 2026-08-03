@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model":"deepseek/deepseek-v4-flash",
+  // "model":"openrouter/deepseek/deepseek-v4-flash",
   "mcp": {
     // "browser-auth": {
     //   "type": "remote",
@@ -115,7 +115,7 @@
       "permission": {
         "edit": {"*": "deny", "*_test.go": "allow"},
         "bash": {
-          "*": "ask",
+          "*": "deny",
           "ls *": "allow",
           "grep": "allow",
           "go test *": "allow",
@@ -148,7 +148,9 @@
       "permission": {
         "edit": {"*": "allow", "*_test.go": "deny"},
         "bash": {
-          "*": "ask",
+          "*": "deny",
+          "rm*": "deny",
+          "*rm*": "deny",
           "ls *": "allow",
           "go test*": "allow",
           "go vet*": "allow",
@@ -260,29 +262,29 @@
       }
     },
 
-    "deepseek": {
-      "api": "https://api.deepseek.com",
-      "options": {
-        "apiKey": "{env:DEEPSEEK_API_KEY}",
-        "baseURL": "https://api.deepseek.com"
-      },
-      "models": {
-        "deepseek-v4-pro": {
-          "name": "DeepSeek V4 Pro",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "deepseek-v4-flash": {
-          "name": "DeepSeek V4 Flash",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-      },
-    },
+    // "deepseek": {
+    //   "api": "https://api.deepseek.com",
+    //   "options": {
+    //     "apiKey": "{env:DEEPSEEK_API_KEY}",
+    //     "baseURL": "https://api.deepseek.com"
+    //   },
+    //   "models": {
+    //     "deepseek-v4-pro": {
+    //       "name": "DeepSeek V4 Pro",
+    //       "limit": {
+    //         "context": 1048576,
+    //         "output": 65536
+    //       }
+    //     },
+    //     "deepseek-v4-flash": {
+    //       "name": "DeepSeek V4 Flash",
+    //       "limit": {
+    //         "context": 1048576,
+    //         "output": 65536
+    //       }
+    //     },
+    //   },
+    // },
 
     "llama-cpp": {
       "api": "http://cachyos.local:9900/v1",
