@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  // "model":"openrouter/deepseek/deepseek-v4-flash",
   "mcp": {
     // "browser-auth": {
     //   "type": "remote",
@@ -54,10 +53,21 @@
     "build": {
       "color": "#8B0000"
     },
+
+
     "coordinator": {
       "mode": "primary",
-      // "model": "deepseek/deepseek-v4-pro",
       "permission": {
+        // Allow the coordinator the following subagents.
+        "task":{
+          "*":"ask",
+          "scout":"allow",
+          "explore":"allow",
+          "tester":"allow",
+          "producer":"allow",
+          "auditor":"allow"
+        },
+
         "edit": {"*": "ask"},
         "bash": {
           "*": "allow",
@@ -74,18 +84,27 @@
           "git *": "allow",
           "sed*": "deny",
           "awk*": "deny",
-          "tee*": "deny",
         }
       }
     },
     "auditor": {
       "mode": "subagent",
-      // "model": "deepseek/deepseek-v4-pro",
+      "steps": 40, // auditor gets more steps because it has to read up on more context.
       "permission": {
+        // Allow the auditor to explore and scout codebases.
+        "task":{
+          "*":"deny",
+          "scout":"allow",
+          "explore":"allow"
+        },
+        // Since auditor is entirely read-only, it has access to any dir by default.
+        "external_directory":{
+          "*": "allow"
+        },
         "edit": {"*": "deny"},
         "bash": {
           "*": "deny",
-          "ls *": "allow",
+          "ls": "allow",
           "grep": "allow",
           "go test *": "allow",
           "go vet *": "allow",
@@ -93,9 +112,7 @@
           "go tool *": "allow",
           "go mod *": "allow",
           "go fmt *": "allow",
-          "go generate*": "deny",
           "golangci-lint *": "allow",
-          "git *": "deny",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
@@ -111,8 +128,12 @@
 
     "tester": {
       "mode": "subagent",
-      // "model": "deepseek/deepseek-v4-flash",
+      "steps": 20,
+        // Forbid the tester from spawning subagents.
       "permission": {
+        "task":{
+          "*":"deny"
+        },
         "edit": {"*": "deny", "*_test.go": "allow"},
         "bash": {
           "*": "deny",
@@ -124,9 +145,7 @@
           "go tool *": "allow",
           "go mod *": "allow",
           "go fmt *": "allow",
-          "go generate*": "deny",
           "golangci-lint *": "allow",
-          "git *": "deny",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
@@ -138,14 +157,17 @@
           "git shortlog*": "allow",
           "sed*": "deny",
           "awk*": "deny",
-          "tee*": "deny",
         }
       }
     },
     "producer": {
       "mode": "subagent",
-      // "model": "deepseek/deepseek-v4-flash",
+      "steps": 20, // Limits the agent from going on a thinking spiral.
       "permission": {
+        // Forbid the producer from spawning subagents.
+        "task":{
+          "*":"deny"
+        },
         "edit": {"*": "allow", "*_test.go": "deny"},
         "bash": {
           "*": "deny",
@@ -158,10 +180,7 @@
           "go tool*": "allow",
           "go mod*": "allow",
           "go fmt*": "allow",
-          "go generate*": "deny",
-          "go *": "deny",
           "golangci-lint *": "allow",
-          "git *": "deny",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
@@ -173,11 +192,12 @@
           "git shortlog*": "allow",
           "sed*": "deny",
           "awk*": "deny",
-          "tee*": "deny"
         }
       }
     }
   },
+
+  // Global safguards against keys and secrets.
   "permission": {
     "websearch": "allow",
     // safeguards
@@ -217,73 +237,35 @@
     "./plugin/context-usage.ts",
   ],
   "provider": {
-    "openrouter": {
-      "api": "https://openrouter.ai/api/v1",
-      "options": {
-        "apiKey": "{env:OPENROUTER_API_KEY}",
-        "baseURL": "https://openrouter.ai/api/v1"
-      },
-      "models": {
-        "google/gemma-4-26b-a4b-it": {
-          "name": "Gemma 4 26B A4B IT",
-          "limit": {
-            "context": 262144,
-            "output": 65536
-          }
-        },
-        "google/gemma-4-31b-it": {
-          "name": "Gemma 4 31B IT",
-          "limit": {
-            "context": 262144,
-            "output": 65536
-          }
-        },
-        "qwen/qwen3.5-397b-a17b": {
-          "name": "qwen3.5-397b-a17b",
-          "limit": {
-            "context": 262144,
-            "output": 65536
-          }
-        },
-        "deepseek/deepseek-v4-flash": {
-          "name": "DeepSeek V4 Flash",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "deepseek/deepseek-v4-pro": {
-          "name": "DeepSeek V4 Pro",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        }
-      }
-    },
-
-    // "deepseek": {
-    //   "api": "https://api.deepseek.com",
+    // "openrouter": {
+    //   "api": "https://openrouter.ai/api/v1",
     //   "options": {
-    //     "apiKey": "{env:DEEPSEEK_API_KEY}",
-    //     "baseURL": "https://api.deepseek.com"
+    //     "apiKey": "{env:OPENROUTER_API_KEY}",
+    //     "baseURL": "https://openrouter.ai/api/v1"
     //   },
     //   "models": {
-    //     "deepseek-v4-pro": {
-    //       "name": "DeepSeek V4 Pro",
+    //     "qwen/qwen3.5-397b-a17b": {
+    //       "name": "qwen3.5-397b-a17b",
     //       "limit": {
-    //         "context": 1048576,
+    //         "context": 262144,
     //         "output": 65536
     //       }
     //     },
-    //     "deepseek-v4-flash": {
+    //     "deepseek/deepseek-v4-flash": {
     //       "name": "DeepSeek V4 Flash",
     //       "limit": {
     //         "context": 1048576,
     //         "output": 65536
     //       }
     //     },
-    //   },
+    //     "deepseek/deepseek-v4-pro": {
+    //       "name": "DeepSeek V4 Pro",
+    //       "limit": {
+    //         "context": 1048576,
+    //         "output": 65536
+    //       }
+    //     }
+    //   }
     // },
 
     "llama-cpp": {
