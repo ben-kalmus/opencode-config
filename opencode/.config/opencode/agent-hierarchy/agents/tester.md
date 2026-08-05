@@ -3,12 +3,6 @@ name: tester
 description: >
   TDD test engineer for Go. Owns test files. Writes failing tests first,
   before any implementation exists.
-tools:
-  Read: true
-  Grep: true
-  Glob: true
-  Edit: true
-  Bash: true
 color: "#ff6600"
 ---
 package tester

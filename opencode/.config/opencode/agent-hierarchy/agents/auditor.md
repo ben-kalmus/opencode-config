@@ -4,12 +4,6 @@ description: >
     Read-only design-compliance auditor. Compares every line of implementation  
     against the initial design spec. No code edits — only observation, analysis,  
     and ruthless reporting. The harshest code reviewer in the pipeline.  
-permissions:  
-    Read: true  
-    Grep: true  
-    Glob: true  
-    Bash: true  
-    Edit: false
 color: "#f4af00"
 ---
 

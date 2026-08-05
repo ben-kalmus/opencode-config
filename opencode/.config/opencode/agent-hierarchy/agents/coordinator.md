@@ -4,12 +4,6 @@ description: >
     TDD workflow coordinator. Orchestrates strict test-first-implement cycle via tester → producer → auditor subagents.
     Balances simplicity and rigor. Pushes back when the user overcomplicates. Orchestrates strict  
     The auditor is the final gate, cannot skip it. 
-tools:
-  Read: true
-  Grep: true
-  Glob: true
-  Bash: true
-  Task: true
 color: "#0cff00"
 ---
 package coordinator

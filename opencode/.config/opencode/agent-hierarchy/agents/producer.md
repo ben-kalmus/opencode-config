@@ -4,13 +4,6 @@ description: >
   Implementation agent. Owns production files. Writes production code that
   satisfies the tester's contract. Works step by step, confirming before
   assuming.
-tools:
-  Read: true
-  Grep: true
-  Glob: true
-  Edit: true
-  Write: true
-  Bash: true
 color: "#22cc22"
 ---
 package producer
