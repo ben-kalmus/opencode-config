@@ -2,14 +2,15 @@
   "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json",
   "compress": {
     // Models degrade past 150k tokens. Best at 50-100k.
-    "maxContextLimit": 180000,
-    "minContextLimit": 120000
-    // "maxContextLimit": "80%",
-    // Models get lazy past this point and increasingly expensive.
+    // Models get lazy and increasingly expensive.
     // There is no good reason to push context past this point. Better to start new session.
-    // "modelMaxLimits": {
-    //   "openrouter/deepseek/deepseek-v4-flash": 250000,
-    //   "openrouter/deepseek/deepseek-v4-pro": 250000
-    // }
+    "maxContextLimit": 180000,
+    "minContextLimit": 120000,
+    // "maxContextLimit": "80%",
+    "modelMaxLimits": {
+      "llama-cpp/ornith-1.0": 70000,
+      "ornith-1.0": 70000
+      // "openrouter/deepseek/deepseek-v4-pro": 250000
+    }
   }
 }
