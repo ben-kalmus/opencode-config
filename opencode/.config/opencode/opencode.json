@@ -61,6 +61,7 @@
         // Allow the coordinator the following subagents.
         "task":{
           "*":"ask",
+          "general": "deny",
           "scout":"allow",
           "explore":"allow",
           "tester":"allow",
@@ -305,28 +306,28 @@
           "name": "Qwen 3.6 35B A3B MoE",
           "limit": {
             "context": 85000,
-            "output": 32768
+            "output": 15000
           }
         },
         "qwen-3.6-27b": {
           "name": "Qwen 3.6 27B",
           "limit": {
             "context": 85000,
-            "output": 32768
+            "output": 15000
           }
         },
         "qwen-3.6-27b-heretic": {
           "name": "Qwen 3.6 27B Heretic",
           "limit": {
             "context": 85000,
-            "output": 32768
+            "output": 15000
           }
         },
         "ornith-1.0": {
-          "name": "Ornith-1.0",
+          "name": "ornith-1.0",
           "limit": {
-            "context": 85000,
-            "output": 32768
+            "context": 83000,
+            "output": 10000
           }
         }
       }
