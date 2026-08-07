@@ -60,15 +60,14 @@ function getDefaultMode() {
 
 // Symlink-safe flag file write.
 // Uses O_NOFOLLOW where available, writes atomically via temp + rename with
-// 0600 permissions. Protects against local attackers replacing the predictable
-// flag path (~/.claude/.caveman-active) with a symlink to clobber other files.
+// 0600 permissions. Protects against local attackers replacing the OpenCode
+// active-mode state file with a symlink to clobber other files.
 //
-// When the parent directory is itself a symlink (legitimate pattern: ~/.claude
-// symlinked to another drive or shared config dir), resolves through to the
-// real path and verifies ownership on Unix (uid match). This allows e.g.
-//   ln -s /opt/shared-claude-config ~/.claude
-// while still refusing attacker-planted symlinks pointing to dirs owned by
-// another user.
+// When the parent directory is itself a symlink (for example, an OpenCode
+// config directory linked to another drive or shared config dir), resolves
+// through to the real path and verifies ownership on Unix (uid match). This
+// allows legitimate user-owned config directory symlinks while still refusing
+// attacker-planted symlinks pointing to dirs owned by another user.
 //
 // On Windows, uid checks are unavailable — falls back to verifying the resolved
 // path lives under the user's home directory.
@@ -85,7 +84,7 @@ function safeWriteFlag(flagPath, content) {
     fs.mkdirSync(flagDir, { recursive: true });
 
     // When the parent directory is a symlink, resolve it and verify ownership.
-    // This allows legitimate symlinked ~/.claude dirs while still refusing
+    // This allows legitimate symlinked OpenCode config dirs while still refusing
     // attacker-planted symlinks pointing at dirs owned by another user.
     let realFlagDir;
     try {
