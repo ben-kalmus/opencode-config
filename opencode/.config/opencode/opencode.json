@@ -148,7 +148,7 @@
 
     "tester": {
       "mode": "subagent",
-      "steps": 15,
+      "steps": 18,
         // Forbid the tester from spawning subagents.
       "permission": {
         "task":{
@@ -187,7 +187,7 @@
     },
     "producer": {
       "mode": "subagent",
-      "steps": 15, // Limits the agent from going on a thinking spiral.
+      "steps": 18, // Limits the agent from going on a thinking spiral.
       "permission": {
         // Forbid the producer from spawning subagents.
         "task":{
@@ -316,8 +316,22 @@
             "output": 10000
           }
         },
+        "qwen-3.6-35b-q4-mtp": {
+          "name": "qwen-3.6-35b-q4-mtp",
+          "limit": {
+            "context": 83000,
+            "output": 10000
+          }
+        },
         "qwen-3.6-27b": {
           "name": "Qwen 3.6 27B",
+          "limit": {
+            "context": 83000,
+            "output": 10000
+          }
+        },
+        "qwen-3.6-27b-fable": {
+          "name": "qwen-3.6-27b-fable",
           "limit": {
             "context": 83000,
             "output": 10000
@@ -327,13 +341,6 @@
           "name": "Qwen 3.8 27B Q4",
           "limit": {
             "context": 83000,
-            "output": 10000
-          }
-        },
-        "qwen-3.6-27b-fable": {
-          "name": "qwen-3.6-27b-fable",
-          "limit": {
-            "context": 84000,
             "output": 10000
           }
         },
