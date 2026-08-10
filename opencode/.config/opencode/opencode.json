@@ -47,6 +47,13 @@
     }
   },
   "agent": {
+    "explore": {
+      "permission": {
+        "external_directory":{
+          "*": "allow"
+        },
+      }
+    },
     "plan": {
       "color": "#1E90FF"
     },
@@ -261,7 +268,7 @@
     "./plugins/caveman/plugin.js",
     // "./plugins/smartsnip.ts",
     "@tarquinen/opencode-dcp@latest",
-    "./plugin/context-usage.ts",
+    // "./plugin/context-usage.ts",
   ],
   "provider": {
     // "openrouter": {
