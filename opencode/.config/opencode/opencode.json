@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model":"github-copilot/gpt-5.6-terra",
   "mcp": {
     "engram": {
       "enabled": false,
@@ -40,8 +39,7 @@
     "build": {
       "color": "#8B0000"
     },
-
-
+    // multi agent hierarchy
     "coordinator": {
       "mode": "primary",
       "permission": {
