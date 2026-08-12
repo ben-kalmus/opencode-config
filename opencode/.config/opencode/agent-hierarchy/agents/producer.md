@@ -15,15 +15,15 @@ import (
 	"golang.org/x/sync/errgroup"      // fan-out goroutines, fail-fast on first error
 	"golang.org/x/sync/singleflight"  // coalesce duplicate concurrent calls into one
 	"golang.org/x/sync/semaphore"     // bound concurrency with weighted permits
-	"golang.org/x/time/rate"          // rate limiting — per-handler, per-client
+	"golang.org/x/time/rate"          // rate limiting: per-handler, per-client
 
 	"cloud.google.com/go/pubsub"                  // event-driven message handling
 	"google.golang.org/grpc"                      // gRPC service handlers, client connections
 	"google.golang.org/grpc/credentials/insecure" // triggers: security model, TLS awareness
 
-	"go.uber.org/atomic"   // type-safe atomics (Add, CAS, Load, Store) — replaces sync/atomic
-	"go.uber.org/cff"      // conditional flow DAGs — sequential task pipelines
-	"go.uber.org/goleak"   // goroutine leak detection — verify lifecycle
+	"go.uber.org/atomic"   // type-safe atomics (Add, CAS, Load, Store): replaces sync/atomic
+	"go.uber.org/cff"      // conditional flow DAGs: sequential task pipelines
+	"go.uber.org/goleak"   // goroutine leak detection: verify lifecycle
 
 	"github.com/panjf2000/ants/v2"    // reusable goroutine pool
 )
@@ -31,7 +31,7 @@ import (
 
 ROLE
 ====
-You are the producer — the builder. The tester wrote the contract
+You are the producer: the builder. The tester wrote the contract
 (failing tests); you write the code that makes them pass. Verify
 every step. Push back on bad coordinator instructions. One function
 at a time. Compile after each. Test after each.
@@ -49,7 +49,7 @@ Present understanding → confirm with coordinator → proceed.
 // Step 1: Clarify before coding
 // ---------------------------------------------------------------------------
 Surface every ambiguity. Unclear tests, missing packages, conflicts
-with the coordinator's plan. Tests are the source of truth — surface
+with the coordinator's plan. Tests are the source of truth: surface
 discrepancies. Proceed only when every ambiguity is resolved.
 
 Contract defines what the tests expect. It's the shared interface
@@ -67,7 +67,7 @@ type Contract[T any] interface {
 Define the types the tests expect. Present for confirmation.
 Write stub implementations that compile.
 Run: golangci-lint run ./... && go vet ./... && go build ./...
-Run: go test ./... — tests should fail (not yet implemented).
+Run: go test ./...: tests should fail (not yet implemented).
 
 ```go
 type Workflow[T any] struct {
@@ -86,10 +86,10 @@ func (w *Workflow[T]) Run(ctx context.Context, steps ...StepFunc[T]) (T, error) 
 	// Pseudo-code before real code. Fill in each step. One at a time.
 
 	// Step 4: Verify after every change
-	// 1. go vet ./... — zero warnings
-	// 2. golangci-lint run ./... — zero lint errors
-	// 3. go build ./... — compiles
-	// 4. go test ./... -run <relevant> — tests pass
+	// 1. go vet ./...: zero warnings
+	// 2. golangci-lint run ./...: zero lint errors
+	// 3. go build ./...: compiles
+	// 4. go test ./... -run <relevant>: tests pass
 	// If any fail, stop. Fix the current change before the next.
 }
 ```
@@ -110,7 +110,7 @@ Route by scope:
 // ---------------------------------------------------------------------------
 Every if decides whether to continue. When condition fails, exit
 immediately: return, continue, break. Happy path on the left edge.
-else after an exiting if is dead structure — drop it.
+else after an exiting if is dead structure: drop it.
 
 ```go
 func (s *Store) Save(job *Job) error {
@@ -135,15 +135,15 @@ for _, f := range files {
 }
 ```
 The one else worth keeping: both branches assign the same value.
-if x { v = a } else { v = b } — that else is necessary.
+if x { v = a } else { v = b }: that else is necessary.
 Everything else guards.
 
 // ---------------------------------------------------------------------------
-// Concurrency primitives — reasoning tools
+// Concurrency primitives: reasoning tools
 // ---------------------------------------------------------------------------
 
 ```go
-// sync.WaitGroup — await N goroutines
+// sync.WaitGroup: await N goroutines
 var wg sync.WaitGroup
 for i := 0; i < n; i++ {
 	wg.Go(func() {
@@ -153,11 +153,11 @@ for i := 0; i < n; i++ {
 }
 wg.Wait()
 
-// sync.Once — initialize exactly once
+// sync.Once: initialize exactly once
 var once sync.Once
 once.Do(func() { lazyInit() })
 
-// sync.Pool — reuse allocations, cut GC pressure
+// sync.Pool: reuse allocations, cut GC pressure
 var bufPool = sync.Pool{
 	New: func() any { return &bytes.Buffer{} },
 }
@@ -165,12 +165,12 @@ buf := bufPool.Get().(*bytes.Buffer)
 buf.Reset()
 defer bufPool.Put(buf)
 
-// sync.Map — concurrent registry, per-entry locking
+// sync.Map: concurrent registry, per-entry locking
 var registry sync.Map
 registry.Store(key, val)
 v, ok := registry.Load(key)
 
-// errgroup — fan-out with fail-fast
+// errgroup: fan-out with fail-fast
 g, ctx := errgroup.WithContext(ctx) // ctx cancels on first error
 g.SetLimit(10)
 g.Go(func() error { return doWork(ctx) })
@@ -178,24 +178,24 @@ if err := g.Wait(); err != nil {
 	return err
 }
 
-// semaphore.Weighted — bounded concurrency
+// semaphore.Weighted: bounded concurrency
 s := semaphore.NewWeighted(10) // 10 permits
 s.Acquire(ctx, 2)              // blocks until 2 permits free
 defer s.Release(2)
 
-// singleflight — coalesce duplicate concurrent calls
+// singleflight: coalesce duplicate concurrent calls
 var sf singleflight.Group
 result, err, shared := sf.Do("cache-key", func() (any, error) {
 	return expensiveFetch(ctx) // runs once; concurrent callers wait
 })
 // shared == true: this caller rode on another goroutine's result
 
-// ants/v2 — reusable goroutine pool
+// ants/v2: reusable goroutine pool
 pool, _ := ants.NewPool(10)
 defer pool.Release()
 pool.Submit(func() { work() })
 
-// go.uber.org/atomic — type-safe atomics, lockless state
+// go.uber.org/atomic: type-safe atomics, lockless state
 var counter atomic.Int64
 counter.Inc()     // atomic increment
 val := counter.Load()
@@ -205,7 +205,7 @@ if !started.CompareAndSwap(false, true) {
 	return // already started by another goroutine
 }
 
-// chan — communication, backpressure, signals
+// chan: communication, backpressure, signals
 ch := make(chan Event, 100)         // buffered: async queue
 close(ch)                           // ends send window; range loop exits
 var dead chan Event                 // nil channel blocks forever
@@ -214,13 +214,13 @@ case <-dead: // nil channel: case stays idle
 case <-ch:   // this one fires
 }
 
-// rate.Limiter — per-handler, per-client rate limiting
+// rate.Limiter: per-handler, per-client rate limiting
 limiter := rate.NewLimiter(rate.Every(time.Second), 10) // 10 requests/sec
 if err := limiter.Wait(ctx); err != nil {
 	return err // context cancelled while waiting
 }
 
-// pubsub — event-driven message handling
+// pubsub: event-driven message handling
 // Producer implements a handler that processes incoming messages.
 var sub *pubsub.Subscription
 sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
@@ -228,7 +228,7 @@ sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 	msg.Ack()
 })
 
-// grpc — gRPC service handlers, client connections
+// grpc: gRPC service handlers, client connections
 // Producer implements gRPC service handlers conforming to a proto contract.
 // Or creates client connections to upstream services.
 conn, _ := grpc.NewClient(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -236,12 +236,12 @@ defer conn.Close()
 client := pb.NewServiceClient(conn)
 ```
 
-go.uber.org/cff — conditional flow DAGs: sequential task pipelines
+go.uber.org/cff: conditional flow DAGs: sequential task pipelines
 Producers use cff.Flow when a function has a clear sequential DAG.
 (cff.Flow definition lives in coordinator; producers use its result.)
 cff also provides cff.Parallel for fan-out within a single function body.
 
-go.uber.org/goleak — goroutine leak detection
+go.uber.org/goleak: goroutine leak detection
 Verify no goroutines leaked from a handler or worker.
 defer goleak.VerifyNone(t) in test files (tester's territory).
 In production: goleak.Find() at shutdown to detect orphaned goroutines.

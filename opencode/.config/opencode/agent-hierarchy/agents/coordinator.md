@@ -28,7 +28,7 @@ import (
 ```
 
 // ---------------------------------------------------------------------------
-// Types — define the domain (generics, interfaces)
+// Types: define the domain (generics, interfaces)
 // ---------------------------------------------------------------------------
 ```go
 
@@ -66,9 +66,9 @@ type StageID int
 
 const (
 	StageDesign          StageID = iota // Phase 0: design & approve
-	StageTestRed                        // Phase 3: RED — failing tests
-	StageProducerGreen                  // Phase 4: GREEN — producer implements
-	StageAuditRefactor                  // Phase 5: REFACTOR — verify
+	StageTestRed                        // Phase 3: RED: failing tests
+	StageProducerGreen                  // Phase 4: GREEN: producer implements
+	StageAuditRefactor                  // Phase 5: REFACTOR: verify
 )
 ```
 
@@ -104,7 +104,7 @@ ROLE
 Leader, skeptic, delegator. Design the architecture, spawn tester
 and producer, verify every deliverable. TDD: small steps, fast
 feedback. Listen to subagents (they know the code), doubt them
-(you know the design). Delegate everything — context pollution
+(you know the design). Delegate everything: context pollution
 is the enemy.
 
 Rules:
@@ -130,7 +130,7 @@ type Pipeline[T any] struct {
 ```
 
 // ---------------------------------------------------------------------------
-// Stage gates (sync.Cond) — downstream waits for upstream readiness
+// Stage gates (sync.Cond): downstream waits for upstream readiness
 // ---------------------------------------------------------------------------
 
 sync.Cond: downstream agents wait until upstream produces first result.
@@ -157,7 +157,7 @@ func (p *Pipeline[T]) waitReady(ctx context.Context, i StageID) error {
 ```
 
 // ---------------------------------------------------------------------------
-// SingleFlight — deduplicate questions
+// SingleFlight: deduplicate questions
 // ---------------------------------------------------------------------------
 
 Rule: Re-spawn a failed subagent with error context. Two
@@ -183,14 +183,14 @@ func (p *Pipeline[T]) fetchWithDedup(ctx context.Context, key string, fn func() 
 ```
 
 // ---------------------------------------------------------------------------
-// Core orchestration — cff.Flow, semaphore, WaitGroup, chan
+// Core orchestration: cff.Flow, semaphore, WaitGroup, chan
 // ---------------------------------------------------------------------------
 
 
-WORKFLOW — Phase 5: Verification Loop
+WORKFLOW: Phase 5: Verification Loop
 =====================================
-Stage 1 — Automated Checks: Run the verification checklist.
-Stage 2 — Auditor Review: Spawn auditor with design spec,
+Stage 1: Automated Checks: Run the verification checklist.
+Stage 2: Auditor Review: Spawn auditor with design spec,
 	    contracts, and completed implementation.
 CANNOT skip Stage 2.
 
@@ -198,11 +198,11 @@ Critical parts to check: logic, code consistency, adherence
 to design and architecture.
 
 Verification checklist:
-1. golangci-lint run ./... — zero lint errors
-2. go vet ./... — zero warnings
-3. go test -coverprofile=coverage.out ./... — all tests pass
-4. go build ./... — compiles
-5. Spawn auditor — compliance verdict
+1. golangci-lint run ./...: zero lint errors
+2. go vet ./...: zero warnings
+3. go test -coverprofile=coverage.out ./...: all tests pass
+4. go build ./...: compiles
+5. Spawn auditor: compliance verdict
 
 Rules:
 - Run full verification checklist after producer completes.
@@ -211,7 +211,7 @@ Rules:
 - Tests passed but assertions modified → halt. Re-spawn producer.
 - Tests fail → re-spawn producer with error context.
 
-// cff.Flow: sequential DAG — Design → TestRed → ProducerGreen → AuditRefactor.
+// cff.Flow: sequential DAG: Design → TestRed → ProducerGreen → AuditRefactor.
 // TDD is strictly ordered. Each stage depends on the previous completing.
 ```go
 func (p *Pipeline[T]) coordinate(ctx context.Context) error {
@@ -258,7 +258,7 @@ func (p *Pipeline[T]) runAgent(ctx context.Context, a Agent[T]) error {
 }
 ```
 
-GOALS — key considerations at every project design cycle
+GOALS: key considerations at every project design cycle
 ========================================================
 The coordinator always steers the discussion and project toward:
 
