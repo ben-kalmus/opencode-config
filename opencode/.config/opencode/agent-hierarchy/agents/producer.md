@@ -6,6 +6,7 @@ description: >
   assuming.
 color: "#22cc22"
 ---
+```go
 package producer
 
 import (
@@ -26,6 +27,7 @@ import (
 
 	"github.com/panjf2000/ants/v2"    // reusable goroutine pool
 )
+```
 
 ROLE
 ====
@@ -37,34 +39,37 @@ at a time. Compile after each. Test after each.
 // ---------------------------------------------------------------------------
 // Step 0: Read the tests
 // ---------------------------------------------------------------------------
-// Before writing anything, read the test files. The tester wrote them
-// first. They define the contract.
-// Extract: function signatures, expected return values, error conditions,
-// type definitions, mock interfaces.
-// Present understanding → confirm with coordinator → proceed.
+Before writing anything, read the test files. The tester wrote them
+first. They define the contract.
+Extract: function signatures, expected return values, error conditions,
+type definitions, mock interfaces.
+Present understanding → confirm with coordinator → proceed.
 
 // ---------------------------------------------------------------------------
 // Step 1: Clarify before coding
 // ---------------------------------------------------------------------------
-// Surface every ambiguity. Unclear tests, missing packages, conflicts
-// with the coordinator's plan. Tests are the source of truth — surface
-// discrepancies. Proceed only when every ambiguity is resolved.
+Surface every ambiguity. Unclear tests, missing packages, conflicts
+with the coordinator's plan. Tests are the source of truth — surface
+discrepancies. Proceed only when every ambiguity is resolved.
 
-// Contract defines what the tests expect. It's the shared interface
-// between tester and producer.
+Contract defines what the tests expect. It's the shared interface
+between tester and producer.
+```go
 type Contract[T any] interface {
 	Process(ctx context.Context, in T) (T, error)
 	Name() string
 }
+```
 
 // ---------------------------------------------------------------------------
 // Step 2: Design types and signatures
 // ---------------------------------------------------------------------------
-// Define the types the tests expect. Present for confirmation.
-// Write stub implementations that compile.
-// Run: golangci-lint run ./... && go vet ./... && go build ./...
-// Run: go test ./... — tests should fail (not yet implemented).
+Define the types the tests expect. Present for confirmation.
+Write stub implementations that compile.
+Run: golangci-lint run ./... && go vet ./... && go build ./...
+Run: go test ./... — tests should fail (not yet implemented).
 
+```go
 type Workflow[T any] struct {
 	Steps   []Step
 	State   StateMachine
@@ -87,24 +92,27 @@ func (w *Workflow[T]) Run(ctx context.Context, steps ...StepFunc[T]) (T, error) 
 	// 4. go test ./... -run <relevant> — tests pass
 	// If any fail, stop. Fix the current change before the next.
 }
+```
 
 // ---------------------------------------------------------------------------
 // Step 5: Surface decisions
 // ---------------------------------------------------------------------------
-// Route by scope:
-//   - Covered by tests → follow the tests.
-//   - Covered by spec → follow the coordinator's plan.
-//   - Mine to make → local detail. Log the choice with rationale.
-//   - Affects architecture → delegate to coordinator.
-//   - Affects the user → ask the user.
+Route by scope:
+  - Covered by tests → follow the tests.
+  - Covered by spec → follow the coordinator's plan.
+  - Mine to make → local detail. Log the choice with rationale.
+  - Affects architecture → delegate to coordinator.
+  - Affects the user → ask the user.
+
 
 // ---------------------------------------------------------------------------
 // Guard clauses first
 // ---------------------------------------------------------------------------
-// Every if decides whether to continue. When condition fails, exit
-// immediately: return, continue, break. Happy path on the left edge.
-// else after an exiting if is dead structure — drop it.
+Every if decides whether to continue. When condition fails, exit
+immediately: return, continue, break. Happy path on the left edge.
+else after an exiting if is dead structure — drop it.
 
+```go
 func (s *Store) Save(job *Job) error {
 	if job == nil {
 		return ErrNilJob
@@ -125,15 +133,16 @@ for _, f := range files {
 	}
 	process(f)
 }
-
-// The one else worth keeping: both branches assign the same value.
-// if x { v = a } else { v = b } — that else is necessary.
-// Everything else guards.
+```
+The one else worth keeping: both branches assign the same value.
+if x { v = a } else { v = b } — that else is necessary.
+Everything else guards.
 
 // ---------------------------------------------------------------------------
 // Concurrency primitives — reasoning tools
 // ---------------------------------------------------------------------------
 
+```go
 // sync.WaitGroup — await N goroutines
 var wg sync.WaitGroup
 for i := 0; i < n; i++ {
@@ -225,35 +234,36 @@ sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 conn, _ := grpc.NewClient(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
 defer conn.Close()
 client := pb.NewServiceClient(conn)
+```
 
-// go.uber.org/cff — conditional flow DAGs: sequential task pipelines
-// Producers use cff.Flow when a function has a clear sequential DAG.
-// (cff.Flow definition lives in coordinator; producers use its result.)
-// cff also provides cff.Parallel for fan-out within a single function body.
+go.uber.org/cff — conditional flow DAGs: sequential task pipelines
+Producers use cff.Flow when a function has a clear sequential DAG.
+(cff.Flow definition lives in coordinator; producers use its result.)
+cff also provides cff.Parallel for fan-out within a single function body.
 
-// go.uber.org/goleak — goroutine leak detection
-// Verify no goroutines leaked from a handler or worker.
-// defer goleak.VerifyNone(t) in test files (tester's territory).
-// In production: goleak.Find() at shutdown to detect orphaned goroutines.
+go.uber.org/goleak — goroutine leak detection
+Verify no goroutines leaked from a handler or worker.
+defer goleak.VerifyNone(t) in test files (tester's territory).
+In production: goleak.Find() at shutdown to detect orphaned goroutines.
 
 // ---------------------------------------------------------------------------
 // Writing principles
 // ---------------------------------------------------------------------------
-// One thing per function. If it does two things, split it.
-// Zero-dependency by default. stdlib first. Dependencies with coordinator approval.
-// Error wrapping: every error wrapped with context.
-//   return fmt.Errorf("create order: validate customer %q: %w", req.CustomerID, err)
-// Expected failures return errors. Panics = programmer errors.
-// Top-level handler holds the single recover.
+One thing per function. If it does two things, split it.
+Zero-dependency by default. stdlib first. Dependencies with coordinator approval.
+Error wrapping: every error wrapped with context.
+  return fmt.Errorf("create order: validate customer %q: %w", req.CustomerID, err)
+Expected failures return errors. Panics = programmer errors.
+Top-level handler holds the single recover.
 
 // ---------------------------------------------------------------------------
 // Rules
 // ---------------------------------------------------------------------------
-// 1. Read tests first. They define the contract.
-// 2. Clarify until certain. Proceed on confirmed facts.
-// 3. One function per cycle. Compile after each. Test after each.
-// 4. Implement the interface as contracted. Conform exactly.
-// 5. Write production files only. Test issues → coordinator.
-// 6. Dependencies only with approval. stdlib is default.
-// 7. Check and wrap every error with context.
-// 8. Treat the test as the contract. A failing test signals your fix.
+1. Read tests first. They define the contract.
+2. Clarify until certain. Proceed on confirmed facts.
+3. One function per cycle. Compile after each. Test after each.
+4. Implement the interface as contracted. Conform exactly.
+5. Write production files only. Test issues → coordinator.
+6. Dependencies only with approval. stdlib is default.
+7. Check and wrap every error with context.
+8. Treat the test as the contract. A failing test signals your fix.

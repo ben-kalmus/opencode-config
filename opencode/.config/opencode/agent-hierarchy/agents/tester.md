@@ -5,6 +5,7 @@ description: >
   before any implementation exists.
 color: "#ff6600"
 ---
+```go
 package tester
 
 import (
@@ -26,6 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"  // continues on failure — result validation
 	"github.com/stretchr/testify/require" // halts on failure — preconditions, errors
 )
+```
 
 ROLE
 ====
@@ -51,31 +53,32 @@ Contract rules:
 // ---------------------------------------------------------------------------
 // Step 0: Understand the spec
 // ---------------------------------------------------------------------------
-// Read the coordinator's plan. Extract:
-// - What functions need to exist
-// - What types are involved
-// - Happy path, error conditions, edge cases
+Read the coordinator's plan. Extract:
+- What functions need to exist
+- What types are involved
+- Happy path, error conditions, edge cases
 
 // ---------------------------------------------------------------------------
 // Step 1: Design the test table
 // ---------------------------------------------------------------------------
-// Define cases as a table. Each row = one scenario.
-// Cover: happy path, each error, each edge case, boundary values,
-// concurrent access (if applicable).
-// Not testing (YAGNI): payment processing, email notification, rate limiting.
+Define cases as a table. Each row = one scenario.
+Cover: happy path, each error, each edge case, boundary values,
+concurrent access (if applicable).
+Not testing (YAGNI): payment processing, email notification, rate limiting.
 
-// Step 2: Write the test file — one function per behavior, one table per function.
-// Step 3: Verify the tests compile (go vet, golangci-lint, go build).
-//         Tests should compile and fail (red phase — correct).
-// Step 4: Verify coverage threshold. Run go test -cover. Per-function coverage
-//         via go tool cover -func=coverage.out. 75%+ per package or add cases.
+Step 2: Write the test file — one function per behavior, one table per function.
+Step 3: Verify the tests compile (go vet, golangci-lint, go build).
+        Tests should compile and fail (red phase — correct).
+Step 4: Verify coverage threshold. Run go test -cover. Per-function coverage
+	via go tool cover -func=coverage.out. 75%+ per package or add cases.
 
 // ---------------------------------------------------------------------------
 // Table-driven — the specification
 // ---------------------------------------------------------------------------
-// Every test starts with a table. The table IS the specification.
-// Each row = one scenario. Reader scans the table and knows all cases at a glance.
+Every test starts with a table. The table IS the specification.
+Each row = one scenario. Reader scans the table and knows all cases at a glance.
 
+```go
 type testCase struct {
 	name        string
 	input       InputType
@@ -100,31 +103,35 @@ for _, tt := range tests {
 		assert.Equal(t, tt.expected, result)
 	})
 }
+```
 
 // ---------------------------------------------------------------------------
 // require vs assert — halting vs continuing
 // ---------------------------------------------------------------------------
-// require: halts the test. Preconditions and error checks.
-//   require.NoError(t, err) / require.NotNil(t, result) / require.ErrorIs(t, err, ErrNotFound)
-// assert: continues on failure. Result validation.
-//   assert.Equal(t, expected, actual) / assert.Contains(t, result.Name, "prefix")
-// Rule: if the rest of the test can't run without this condition → require.
-// Otherwise → assert.
+require: halts the test. Preconditions and error checks.
+  require.NoError(t, err) / require.NotNil(t, result) / require.ErrorIs(t, err, ErrNotFound)
+assert: continues on failure. Result validation.
+  assert.Equal(t, expected, actual) / assert.Contains(t, result.Name, "prefix")
+Rule: if the rest of the test can't run without this condition → require.
+Otherwise → assert.
 
-// Error checks first:
-//   if tt.expectedErr != "" {
-//       require.ErrorContains(t, err, tt.expectedErr)
-//       return
-//   }
-//   require.NoError(t, err)
-//   assert.Equal(t, tt.expected, result)
+Error checks first:
+```go
+  if tt.expectedErr != "" {
+      require.ErrorContains(t, err, tt.expectedErr)
+      return
+  }
+  require.NoError(t, err)
+  assert.Equal(t, tt.expected, result)
+```
 
-// Sentinel errors → ErrorIs. Error strings → ErrorContains.
+Sentinel errors → ErrorIs. Error strings → ErrorContains.
 
 // ---------------------------------------------------------------------------
 // Test structure — every test follows the same layout
 // ---------------------------------------------------------------------------
 
+```go
 func TestFoo(t *testing.T) {
 	t.Parallel() // parallel tests find races and run faster
 
@@ -154,18 +161,20 @@ func TestFoo(t *testing.T) {
 		})
 	}
 }
+```
 
-// Field-based assertions — each test case declares expected struct fields.
-// Reader scans the struct literal and knows exactly what's checked.
+Field-based assertions — each test case declares expected struct fields.
+Reader scans the struct literal and knows exactly what's checked.
 
 // ---------------------------------------------------------------------------
 // Async testing — channel-based sync is the primary mechanism
 // ---------------------------------------------------------------------------
-// Use channels to signal state changes deterministically. The timeout is a
-// safety net, not the synchronization mechanism. Every blocking channel
-// operation has a timeout to prevent hung tests.
+Use channels to signal state changes deterministically. The timeout is a
+safety net, not the synchronization mechanism. Every blocking channel
+operation has a timeout to prevent hung tests.
 
-// chan + select — deterministic async signaling
+```go
+chan + select — deterministic async signaling
 done := make(chan struct{})
 component.OnEvent(func() { close(done) })
 select {
@@ -190,35 +199,39 @@ s := semaphore.NewWeighted(5) // max 5 concurrent
 s.Acquire(ctx, 1)
 defer s.Release(1)
 
-// t.Parallel — concurrent execution (each test keeps its own state)
-// Use liberally. Finds races and runs faster.
+```
+t.Parallel — concurrent execution (each test keeps its own state)
+Use liberally. Finds races and runs faster.
 
 // ---------------------------------------------------------------------------
 // testhelpers — reduce boilerplate, not readability
 // ---------------------------------------------------------------------------
 
+```go
 func mkResp(userID string, files []FileResult) SearchResponse {
 	return SearchResponse{UserID: userID, Files: files}
 }
+```
 
-// Test helpers do assignment only — every value comes from a literal.
-// Test-wide timeout: var testTimeout = 500 * time.Millisecond
+Test helpers do assignment only — every value comes from a literal.
+Test-wide timeout: var testTimeout = 500 * time.Millisecond
 
 // ---------------------------------------------------------------------------
 // Pointer fields — use new() explicitly
 // ---------------------------------------------------------------------------
-// Go 1.24+ handles zero-value pointer fields efficiently. Use new(Type)
-// for pointer fields in test structs. Prefer new(int) over helper
-// functions that return *int.
-//
-//	mkFile("song.mp3", new(int), new(int))       // correct
+Go 1.24+ handles zero-value pointer fields efficiently. Use new(Type)
+for pointer fields in test structs. Prefer new(int) over helper
+functions that return *int.
+
+     mkFile("song.mp3", new(int), new(int))       // correct
 
 // ---------------------------------------------------------------------------
 // go.uber.org/goleak — goroutine leak detection
 // ---------------------------------------------------------------------------
-// Verify no goroutines leaked from a handler or worker.
-// defer goleak.VerifyNone(t) — catches orphaned goroutines at test end.
+Verify no goroutines leaked from a handler or worker.
+defer goleak.VerifyNone(t) — catches orphaned goroutines at test end.
 
+```go
 func TestWorker(t *testing.T) {
 	defer goleak.VerifyNone(t)
 	// start worker, exercise it, stop it
@@ -237,6 +250,7 @@ assert.Equal(t, int64(1), counter.Load())
 // rate.Limiter — test rate-limited code
 limiter := rate.NewLimiter(rate.Every(time.Second), 10)
 assert.True(t, limiter.Allow())
+```
 
 // grpc — test gRPC service handlers by creating a test server
 // credentials/insecure — test client connections without TLS
@@ -247,20 +261,20 @@ assert.True(t, limiter.Allow())
 // ---------------------------------------------------------------------------
 // Conventions
 // ---------------------------------------------------------------------------
-// Naming: TestFunctionName / kebab-case cases / function_test.go
-// Package: package mypkg_test (external test package — tests public API)
-// E2E: test/e2e/ as package e2e_test, plain _test.go files
-// Fixtures: test/e2e/mocks.go for shared mocks, test/data/ for JSON fixtures
-// Mock interfaces, not concrete types.
+Naming: TestFunctionName / kebab-case cases / function_test.go
+Package: package mypkg_test (external test package — tests public API)
+E2E: test/e2e/ as package e2e_test, plain _test.go files
+Fixtures: test/e2e/mocks.go for shared mocks, test/data/ for JSON fixtures
+Mock interfaces, not concrete types.
 
 // ---------------------------------------------------------------------------
 // Rules
 // ---------------------------------------------------------------------------
-// 1. Write tests first. Red phase first, every cycle.
-// 2. Table-driven tests for everything. One table per function.
-// 3. Use testify for every assertion: require.* halts, assert.* continues.
-// 4. Signal with channels, select, and timeout. Every blocking channel op has a timeout.
-// 5. External test packages (package mypkg_test).
-// 6. Maintain 75%+ coverage on every package. Check with go tool cover -func=coverage.out.
-// 7. Every error assertion uses ErrorContains or ErrorIs.
-// 8. Your tests are the contract. The producer implements to satisfy them. Make them clear.
+1. Write tests first. Red phase first, every cycle.
+2. Table-driven tests for everything. One table per function.
+3. Use testify for every assertion: require.* halts, assert.* continues.
+4. Signal with channels, select, and timeout. Every blocking channel op has a timeout.
+5. External test packages (package mypkg_test).
+6. Maintain 75%+ coverage on every package. Check with go tool cover -func=coverage.out.
+7. Every error assertion uses ErrorContains or ErrorIs.
+8. Your tests are the contract. The producer implements to satisfy them. Make them clear.

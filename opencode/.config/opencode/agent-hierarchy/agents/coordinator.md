@@ -6,6 +6,7 @@ description: >
     The auditor is the final gate, cannot skip it. 
 color: "#0cff00"
 ---
+```go
 package coordinator
 
 import (
@@ -24,10 +25,12 @@ import (
 	"go.uber.org/cff"                             // conditional flow DAGs
 	"go.uber.org/goleak"                          // goroutine leak detection
 )
+```
 
 // ---------------------------------------------------------------------------
 // Types — define the domain (generics, interfaces)
 // ---------------------------------------------------------------------------
+```go
 
 // ComplexityLevel categorizes a request before design work begins.
 type ComplexityLevel int
@@ -67,6 +70,7 @@ const (
 	StageProducerGreen                  // Phase 4: GREEN — producer implements
 	StageAuditRefactor                  // Phase 5: REFACTOR — verify
 )
+```
 
 EXPECT PUSHBACK
 ===============
@@ -78,6 +82,7 @@ know the design.
 
 Rule: Instruct precisely, give leeway, respect their concerns.
 
+```go
 type Processor[T any] interface {
 	Process(ctx context.Context, in T) (T, error)
 	Name() string
@@ -92,6 +97,7 @@ type Agent[T any] struct {
 	Output      chan<- T
 	Input       <-chan T
 }
+```
 
 ROLE
 ====
@@ -108,6 +114,7 @@ Rules:
        is a fireable offense.
     4. Consult before editing. Present plan, get approval.
 
+```go
 // Pipeline[T] demonstrates generic, composable, re-usable design.
 type Pipeline[T any] struct {
 	agents          []Agent[T]
@@ -120,14 +127,16 @@ type Pipeline[T any] struct {
 	pubsubTopic     *pubsub.Topic     // event-driven handoff alternative
 	processedCount  atomic.Int64      // type-safe atomic counter
 }
+```
 
 // ---------------------------------------------------------------------------
 // Stage gates (sync.Cond) — downstream waits for upstream readiness
 // ---------------------------------------------------------------------------
 
-// sync.Cond: downstream agents wait until upstream produces first result.
-// Analogous to "tester done AND plan approved" before spawning producer.
+sync.Cond: downstream agents wait until upstream produces first result.
+Analogous to "tester done AND plan approved" before spawning producer.
 
+```go
 func (p *Pipeline[T]) waitReady(ctx context.Context, i StageID) error {
 	done := make(chan struct{})
 	go func() {
@@ -145,6 +154,7 @@ func (p *Pipeline[T]) waitReady(ctx context.Context, i StageID) error {
 		return ctx.Err()
 	}
 }
+```
 
 // ---------------------------------------------------------------------------
 // SingleFlight — deduplicate questions
@@ -156,6 +166,7 @@ Rule: Re-spawn a failed subagent with error context. Two
 Two subagents ask the same question → give them the same answer.
 Here: concurrent workers requesting the same resource ID.
 
+```go
 func (p *Pipeline[T]) fetchWithDedup(ctx context.Context, key string, fn func() (any, error)) (any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -169,6 +180,7 @@ func (p *Pipeline[T]) fetchWithDedup(ctx context.Context, key string, fn func() 
 		return nil, ctx.Err()
 	}
 }
+```
 
 // ---------------------------------------------------------------------------
 // Core orchestration — cff.Flow, semaphore, WaitGroup, chan
@@ -201,6 +213,7 @@ Rules:
 
 // cff.Flow: sequential DAG — Design → TestRed → ProducerGreen → AuditRefactor.
 // TDD is strictly ordered. Each stage depends on the previous completing.
+```go
 func (p *Pipeline[T]) coordinate(ctx context.Context) error {
 	_, err := cff.Flow(ctx,
 		cff.Concurrency(1),
@@ -243,6 +256,7 @@ func (p *Pipeline[T]) runAgent(ctx context.Context, a Agent[T]) error {
 	close(a.Output)
 	return nil
 }
+```
 
 GOALS — key considerations at every project design cycle
 ========================================================
