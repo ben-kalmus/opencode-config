@@ -305,22 +305,22 @@
         "qwen-3.6-35b-a3b": {
           "name": "Qwen 3.6 35B A3B MoE",
           "limit": {
-            "context": 85000,
-            "output": 15000
+            "context": 83000,
+            "output": 10000
           }
         },
         "qwen-3.6-27b": {
           "name": "Qwen 3.6 27B",
           "limit": {
-            "context": 85000,
-            "output": 15000
+            "context": 83000,
+            "output": 10000
           }
         },
-        "qwen-3.6-27b-heretic": {
-          "name": "Qwen 3.6 27B Heretic",
+        "qwen-3.6-27b-fable": {
+          "name": "qwen-3.6-27b-fable",
           "limit": {
-            "context": 85000,
-            "output": 15000
+            "context": 84000,
+            "output": 10000
           }
         },
         "ornith-1.0": {
