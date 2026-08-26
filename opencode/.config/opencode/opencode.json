@@ -323,6 +323,13 @@
             "output": 10000
           }
         },
+        "qwen-3.8-27b-q4": {
+          "name": "Qwen 3.8 27B Q4",
+          "limit": {
+            "context": 83000,
+            "output": 10000
+          }
+        },
         "qwen-3.6-27b-fable": {
           "name": "qwen-3.6-27b-fable",
           "limit": {
