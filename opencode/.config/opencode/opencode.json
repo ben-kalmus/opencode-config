@@ -79,7 +79,7 @@
     },
     "auditor": {
       "mode": "subagent",
-      "steps": 30, // auditor gets more steps because it has to read up on more context.
+      "steps": 45, // auditor gets more steps because it has to read up on more context.
       "permission": {
         // Allow the auditor to explore and scout codebases.
         "task":{
