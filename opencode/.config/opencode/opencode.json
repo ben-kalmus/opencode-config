@@ -217,8 +217,11 @@
     // safeguards
     "read": {
       "*": "allow",
+      "* .env": "deny",
+      "* .env *": "deny",
       "*.env": "deny",
       "*.env.*": "deny",
+      "*.env.example": "allow",
       ".ssh/**": "deny",
       "**/id_rsa": "deny",
       "**/id_ed25519": "deny",
