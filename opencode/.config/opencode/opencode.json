@@ -31,6 +31,7 @@
         "external_directory":{
           "*": "allow"
         },
+        "question": "deny",
       }
     },
     "plan": {
@@ -43,6 +44,7 @@
     "coordinator": {
       "mode": "primary",
       "permission": {
+        "question": "deny",
         // Allow the coordinator the following subagents.
         "task":{
           "*":"ask",
@@ -81,6 +83,7 @@
       "mode": "subagent",
       "steps": 45, // auditor gets more steps because it has to read up on more context.
       "permission": {
+        "question": "deny",
         // Allow the auditor to explore and scout codebases.
         "task":{
           "*":"deny",
@@ -130,6 +133,7 @@
       "steps": 18,
         // Forbid the tester from spawning subagents.
       "permission": {
+        "question": "deny",
         "task":{
           "*":"deny"
         },
@@ -169,6 +173,7 @@
       "mode": "subagent",
       "steps": 18, // Limits the agent from going on a thinking spiral.
       "permission": {
+        "question": "deny",
         // Forbid the producer from spawning subagents.
         "task":{
           "*":"deny"
@@ -213,6 +218,7 @@
 
   // Glob rules: * matches any except / and leading dot.  ** matches everything including /.  .env* matches .env but *.env* does not (leading dot).  Last matching rule wins.
   "permission": {
+    "question": "deny",
     "websearch": "allow",
     // safeguards
     "read": {
