@@ -297,6 +297,24 @@
     // "./plugin/context-usage.ts",
   ],
   "provider": {
+    "enablers":{
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Enablers",
+      "options": {
+        "apiKey": "{env:ENABLERS_JWT}",
+        "baseURL": "https://inference.api.enablers.algolia.net/v1"
+      },
+      "models": {
+        "xlarge":{
+          "name":"GLM-5.2",
+          "limit": {
+            "context": 1048576,
+            "output": 262144
+          }
+        }
+      }
+    },
+
     "llama-cpp": {
       "api": "http://localhost:9900/v1",
       "options": {
