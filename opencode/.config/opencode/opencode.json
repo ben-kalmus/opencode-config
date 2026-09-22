@@ -66,7 +66,6 @@
     "/home/benkalmus/work/opencode-scrub-session-plugin",
     "@tarquinen/opencode-dcp@latest",
   ],
-
   "providers": {
     "openrouter": {
       "package": "@opencode/ai/providers/openrouter",
@@ -80,6 +79,24 @@
           "limit": {
             "context": 1048576,
             "output": 65536
+          }
+        }
+      }
+    },
+
+    "enablers": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "name": "Enablers",
+      "settings": {
+        "apiKey": "{env:ENABLERS_JWT}",
+        "baseURL": "https://inference.api.enablers.algolia.net/v1"
+      },
+      "models": {
+        "xlarge": {
+          "name": "GLM-5.2",
+          "limit": {
+            "context": 1048576,
+            "output": 262144
           }
         }
       }
