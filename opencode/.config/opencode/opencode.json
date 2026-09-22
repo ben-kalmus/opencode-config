@@ -96,6 +96,24 @@
       }
     },
 
+    "enablers": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "name": "Enablers",
+      "settings": {
+        "apiKey": "{env:ENABLERS_JWT}",
+        "baseURL": "https://inference.api.enablers.algolia.net/v1"
+      },
+      "models": {
+        "xlarge": {
+          "name": "GLM-5.2",
+          "limit": {
+            "context": 1048576,
+            "output": 262144
+          }
+        }
+      }
+    },
+
     "llama-cpp": {
       "package": "@opencode/ai/providers/openai-compatible",
       "settings": {
