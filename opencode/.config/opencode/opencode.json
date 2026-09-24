@@ -13,22 +13,40 @@
   },
   "lsp": {
     "go": {
-      "command": ["gopls"],
-      "extensions": [".go"]
+      "command": [
+        "gopls"
+      ],
+      "extensions": [
+        ".go"
+      ]
     },
     "pyright": {
-      "command": ["pyright-langserver", "--stdio"],
-      "extensions": [".py", ".pyi"]
+      "command": [
+        "pyright-langserver",
+        "--stdio"
+      ],
+      "extensions": [
+        ".py",
+        ".pyi"
+      ]
     },
     "bash": {
-      "command": ["bash-language-server", "start"],
-      "extensions": [".sh", ".bash", ".zsh", ".ksh"]
+      "command": [
+        "bash-language-server",
+        "start"
+      ],
+      "extensions": [
+        ".sh",
+        ".bash",
+        ".zsh",
+        ".ksh"
+      ]
     }
   },
   "agent": {
     "explore": {
       "permission": {
-        "external_directory":{
+        "external_directory": {
           "*": "allow"
         },
         "question": "deny",
@@ -46,17 +64,18 @@
       "permission": {
         "question": "deny",
         // Allow the coordinator the following subagents.
-        "task":{
-          "*":"ask",
+        "task": {
+          "*": "ask",
           "general": "deny",
-          "scout":"allow",
-          "explore":"allow",
-          "tester":"allow",
-          "producer":"allow",
-          "auditor":"allow"
+          "scout": "allow",
+          "explore": "allow",
+          "tester": "allow",
+          "producer": "allow",
+          "auditor": "allow"
         },
-
-        "edit": {"*": "ask"},
+        "edit": {
+          "*": "ask"
+        },
         "bash": {
           "*": "allow",
           "ls *": "allow",
@@ -85,16 +104,18 @@
       "permission": {
         "question": "deny",
         // Allow the auditor to explore and scout codebases.
-        "task":{
-          "*":"deny",
-          "scout":"allow",
-          "explore":"allow"
+        "task": {
+          "*": "deny",
+          "scout": "allow",
+          "explore": "allow"
         },
         // Since auditor is entirely read-only, it has access to any dir by default.
-        "external_directory":{
+        "external_directory": {
           "*": "allow"
         },
-        "edit": {"*": "deny"},
+        "edit": {
+          "*": "deny"
+        },
         "bash": {
           "*": "deny",
           "ls": "allow",
@@ -127,17 +148,20 @@
         }
       }
     },
-
     "tester": {
       "mode": "subagent",
       "steps": 18,
-        // Forbid the tester from spawning subagents.
+      // Forbid the tester from spawning subagents.
       "permission": {
         "question": "deny",
-        "task":{
-          "*":"deny"
+        "task": {
+          "*": "deny"
         },
-        "edit": {"*": "deny", "*_test.*": "allow", "**/*_test.*": "allow"},
+        "edit": {
+          "*": "deny",
+          "*_test.*": "allow",
+          "**/*_test.*": "allow"
+        },
         "bash": {
           "*": "deny",
           "ls *": "allow",
@@ -175,10 +199,14 @@
       "permission": {
         "question": "deny",
         // Forbid the producer from spawning subagents.
-        "task":{
-          "*":"deny"
+        "task": {
+          "*": "deny"
         },
-        "edit": {"*": "allow", "*_test.*": "deny", "**/*_test.*": "deny"},
+        "edit": {
+          "*": "allow",
+          "*_test.*": "deny",
+          "**/*_test.*": "deny"
+        },
         "bash": {
           "*": "deny",
           "sed*": "deny",
@@ -215,9 +243,12 @@
       }
     }
   },
-
   // Glob rules: * matches any except / and leading dot.  ** matches everything including /.  .env* matches .env but *.env* does not (leading dot).  Last matching rule wins.
   "permission": {
+    "external_directory": {
+      "/tmp": "allow",
+      "/tmp/**": "allow"
+    },
     "question": "deny",
     "websearch": "allow",
     // safeguards
@@ -297,7 +328,7 @@
     // "./plugin/context-usage.ts",
   ],
   "provider": {
-    "enablers":{
+    "enablers": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Enablers",
       "options": {
@@ -305,8 +336,8 @@
         "baseURL": "https://inference.api.enablers.algolia.net/v1"
       },
       "models": {
-        "xlarge":{
-          "name":"GLM-5.2",
+        "xlarge": {
+          "name": "GLM-5.2",
           "limit": {
             "context": 1048576,
             "output": 262144
@@ -314,7 +345,6 @@
         }
       }
     },
-
     "llama-cpp": {
       "api": "http://localhost:9900/v1",
       "options": {
