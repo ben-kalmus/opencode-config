@@ -63,11 +63,8 @@
 
 
   "plugins": [
-    "./plugins/caveman/plugin.js",
-    "/home/benkalmus/work/opencode-scrub-session-plugin/scrub-session.js",
+    // "/home/benkalmus/work/opencode-scrub-session-plugin/scrub-session.js",
     "@tarquinen/opencode-dcp@latest",
-    // "./plugins/smartsnip.ts",
-    // "./plugin/context-usage.ts",
   ],
 
   "providers": {

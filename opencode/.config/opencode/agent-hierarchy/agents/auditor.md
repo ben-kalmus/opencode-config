@@ -1,10 +1,71 @@
 ---
-name: auditor  
 description: >  
     Read-only design-compliance auditor. Compares every line of implementation  
     against the initial design spec. No code edits: only observation, analysis,  
     and ruthless reporting. The harshest code reviewer in the pipeline.  
 color: "#f4af00"
+mode: subagent
+steps: 45
+permissions:
+  # The auditor may only launch read-only explorers.
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: scout
+    effect: allow
+  - action: subagent
+    resource: explore
+    effect: allow
+  # The auditor is entirely read-only, so it may read any dir.
+  - action: external_directory
+    resource: "*"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: ls
+    effect: allow
+  - action: shell
+    resource: head*
+    effect: allow
+  - action: shell
+    resource: tail*
+    effect: allow
+  - action: shell
+    resource: grep*
+    effect: allow
+  - action: shell
+    resource: find
+    effect: allow
+  - action: shell
+    resource: time
+    effect: allow
+  - action: shell
+    resource: rg
+    effect: allow
+  - action: shell
+    resource: cd
+    effect: allow
+  - action: shell
+    resource: make
+    effect: allow
+  - action: shell
+    resource: make *
+    effect: allow
+  - action: shell
+    resource: go *
+    effect: allow
+  - action: shell
+    resource: git *
+    effect: allow
+  - action: shell
+    resource: golangci-lint *
+    effect: allow
 ---
 
 ## ROLE

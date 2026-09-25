@@ -21,7 +21,6 @@ git clone git@github.com:benkalmus/opencode-config.git
 cd opencode-config
 git submodule update --init --recursive
 make stow
-make vendor  # install context plugin tokenizer deps
 ```
 
 ## Prereq
@@ -45,8 +44,6 @@ export OPENCODE_ENABLE_EXA=1
 
 Already configured:
 - [DCP](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning): Dynamic Context Pruning: significantly reduces context usage by removing tool calls, errors and repeat mistakes.
-- [Snip](https://github.com/VincentHardouin/opencode-snip) (experimental): Reduces token usage massively for common commands like go test by reducing unnecessary output from tool.
-- [Context Analysis](https://github.com/IgorWarzocha/Opencode-Context-Analysis-Plugin): Run `/context` to see token breakdown by category (system, user, tools, reasoning). Useful for debugging what's eating context.
 
 Consider [superpowers](https://github.com/obra/superpowers). A set of skills to guide development, careful planning, incorporating best practices and without making the same mistakes.
 Navigate to [this page](https://github.com/obra/superpowers/blob/main/docs/README.opencode.md)

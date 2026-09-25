@@ -1,10 +1,61 @@
 ---
-name: producer
 description: >
   Implementation agent. Owns production files. Writes production code that
   satisfies the tester's contract. Works step by step, confirming before
   assuming.
 color: "#22cc22"
+mode: subagent
+steps: 18
+permissions:
+  # The producer may not spawn subagents and may not touch test files.
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*"
+    effect: allow
+  - action: edit
+    resource: "*_test.*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: ls *
+    effect: allow
+  - action: shell
+    resource: head*
+    effect: allow
+  - action: shell
+    resource: tail*
+    effect: allow
+  - action: shell
+    resource: grep*
+    effect: allow
+  - action: shell
+    resource: find *
+    effect: allow
+  - action: shell
+    resource: rg*
+    effect: allow
+  - action: shell
+    resource: xargs
+    effect: allow
+  - action: shell
+    resource: cd *
+    effect: allow
+  - action: shell
+    resource: go *
+    effect: allow
+  - action: shell
+    resource: git *
+    effect: allow
+  - action: shell
+    resource: golangci-lint *
+    effect: allow
+  - action: shell
+    resource: make *
+    effect: allow
 ---
 ```go
 package producer

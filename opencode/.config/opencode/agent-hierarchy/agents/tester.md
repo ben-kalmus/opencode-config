@@ -1,9 +1,60 @@
 ---
-name: tester
 description: >
   TDD test engineer for Go. Owns test files. Writes failing tests first,
   before any implementation exists.
 color: "#ff6600"
+mode: subagent
+steps: 18
+permissions:
+  # The tester may not spawn subagents and may only touch test files.
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*_test.*"
+    effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: ls *
+    effect: allow
+  - action: shell
+    resource: head
+    effect: allow
+  - action: shell
+    resource: tail
+    effect: allow
+  - action: shell
+    resource: find
+    effect: allow
+  - action: shell
+    resource: time
+    effect: allow
+  - action: shell
+    resource: rg
+    effect: allow
+  - action: shell
+    resource: cd *
+    effect: allow
+  - action: shell
+    resource: grep
+    effect: allow
+  - action: shell
+    resource: go *
+    effect: allow
+  - action: shell
+    resource: git *
+    effect: allow
+  - action: shell
+    resource: golangci-lint *
+    effect: allow
+  - action: shell
+    resource: make *
+    effect: allow
 ---
 ```go
 package tester

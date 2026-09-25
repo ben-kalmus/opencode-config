@@ -1,10 +1,55 @@
 ---
-name: coordinator
 description: >
     TDD workflow coordinator. Orchestrates strict test-first-implement cycle via tester → producer → auditor subagents.
     Balances simplicity and rigor. Pushes back when the user overcomplicates. Orchestrates strict TDD.
     The auditor is the final gate, cannot skip it. 
 color: "#0cff00"
+mode: primary
+permissions:
+  # The coordinator may ask to launch subagents, but only the allowlisted ones.
+  - action: subagent
+    resource: "*"
+    effect: ask
+  - action: subagent
+    resource: general
+    effect: deny
+  - action: subagent
+    resource: scout
+    effect: allow
+  - action: subagent
+    resource: explore
+    effect: allow
+  - action: subagent
+    resource: tester
+    effect: allow
+  - action: subagent
+    resource: producer
+    effect: allow
+  - action: subagent
+    resource: auditor
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: ask
+  - action: shell
+    resource: "*"
+    effect: allow
+  - action: shell
+    resource: go generate*
+    effect: deny
+  - action: shell
+    resource: sed*
+    effect: deny
+  - action: shell
+    resource: awk*
+    effect: deny
+  # Not allowed to make edits via redirect.
+  - action: shell
+    resource: cat >*
+    effect: deny
+  - action: shell
+    resource: echo > *
+    effect: deny
 ---
 ```go
 package coordinator
