@@ -1,37 +1,31 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    // "browser-auth": {
-    //   "type": "remote",
-    //   "url": "http://opti.local:8932/mcp",
-    //   "enabled": true
-    // },
-    "browser-lite": {
-      "enabled": false, // careful with this, HUGE CONTEXT DRAIN
-      "type": "remote",
-      "url": "http://opti.local:8931/mcp",
-    },
-    "engram": {
-      "enabled": false,
-      "command": [
-        "/home/linuxbrew/.linuxbrew/bin/engram",
-        "mcp",
-        "--tools=agent"
-      ],
-      "type": "local"
-    },
-    // "paper-search": {
-    //   "type": "local",
-    //   "command": [
-    //     "uv",
-    //     "run",
-    //     "--directory",
-    //     "/home/benkalmus/repos/paper-search-mcp",
-    //     "-m",
-    //     "paper_search_mcp.server"
-    //   ]
-    // }
+    "servers": {
+      // "browser-auth": {
+      //   "type": "remote",
+      //   "url": "http://opti.local:8932/mcp",
+      //   "disabled": false
+      // },
+      "browser-lite": {
+        "disabled": true, // careful with this, HUGE CONTEXT DRAIN
+        "type": "remote",
+        "url": "http://opti.local:8931/mcp",
+      },
+      "engram": {
+        "disabled": true,
+        "command": [
+          "/home/linuxbrew/.linuxbrew/bin/engram",
+          "mcp",
+          "--tools=agent"
+        ],
+        "type": "local"
+      },
+    }
   },
+
+  // V2 accepts "lsp" but ignores it: no language servers run, no LSP tools or diagnostics.
+  // Use project lint, typecheck, or compiler commands instead.
   // "lsp": {
   //   "go": {
   //     "command": ["gopls"],
@@ -46,14 +40,18 @@
   //     "extensions": [".sh", ".bash", ".zsh", ".ksh"]
   //   }
   // },
-  "agent": {
+  // Custom agents (coordinator, auditor, tester, producer) live in agents/ as markdown files.
+  // Their mode, steps, and permissions ride in the frontmatter. Only builtin overrides stay here.
+
+  "agents": {
     "explore": {
-      "permission": {
-        "external_directory": {
-          "*": "allow"
+      "permissions": [
+        {
+          "action": "external_directory",
+          "resource": "*",
+          "effect": "allow"
         },
-        "question": "deny",
-      }
+      ]
     },
     "plan": {
       "color": "#1E90FF"
@@ -61,295 +59,38 @@
     "build": {
       "color": "#8B0000"
     },
-    "coordinator": {
-      "mode": "primary",
-      "permission": {
-        "question": "deny",
-        // Allow the coordinator the following subagents.
-        "task": {
-          "*": "ask",
-          "general": "deny",
-          "scout": "allow",
-          "explore": "allow",
-          "tester": "allow",
-          "producer": "allow",
-          "auditor": "allow"
-        },
-        "edit": {
-          "*": "ask"
-        },
-        "bash": {
-          "*": "allow",
-          "ls *": "allow",
-          "go test *": "allow",
-          "go vet *": "allow",
-          "go build *": "allow",
-          "go tool *": "allow",
-          "go mod *": "allow",
-          "go fmt *": "allow",
-          "go generate*": "deny",
-          "golangci-lint *": "allow",
-          "make *": "allow",
-          "find *": "allow",
-          "rg*": "allow",
-          "git *": "allow",
-          "sed*": "deny",
-          "awk*": "deny",
-          "cat >*": "deny", // Not allowed to make edits
-          "echo > *": "deny", // Not allowed to make edits
-        }
-      }
-    },
-    "auditor": {
-      "mode": "subagent",
-      "steps": 45, // auditor gets more steps because it has to read up on more context.
-      "permission": {
-        "question": "deny",
-        // Allow the auditor to explore and scout codebases.
-        "task": {
-          "*": "deny",
-          "scout": "allow",
-          "explore": "allow"
-        },
-        // Since auditor is entirely read-only, it has access to any dir by default.
-        "external_directory": {
-          "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "bash": {
-          "*": "deny",
-          "ls": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "grep*": "allow",
-          "find": "allow",
-          "time": "allow",
-          "rg": "allow",
-          "cd": "allow",
-          "grep": "allow",
-          "go test *": "allow",
-          "go vet *": "allow",
-          "go build *": "allow",
-          "go tool *": "allow",
-          "go mod *": "allow",
-          "go fmt *": "allow",
-          "golangci-lint *": "allow",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git blame*": "allow",
-          "git grep*": "allow",
-          "git ls-files*": "allow",
-          "git rev-parse*": "allow",
-          "git shortlog*": "allow",
-          "make": "allow",
-          "make *": "allow",
-        }
-      }
-    },
-    "tester": {
-      "mode": "subagent",
-      "steps": 18,
-      // Forbid the tester from spawning subagents.
-      "permission": {
-        "question": "deny",
-        "task": {
-          "*": "deny"
-        },
-        "edit": {
-          "*": "deny",
-          "*_test.*": "allow",
-          "**/*_test.*": "allow"
-        },
-        "bash": {
-          "*": "deny",
-          "ls *": "allow",
-          "head": "allow",
-          "tail": "allow",
-          "find": "allow",
-          "time": "allow",
-          "rg": "allow",
-          "cd *": "allow",
-          "grep": "allow",
-          "go test *": "allow",
-          "go vet *": "allow",
-          "go build *": "allow",
-          "go tool *": "allow",
-          "go mod *": "allow",
-          "go fmt *": "allow",
-          "golangci-lint *": "allow",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git blame*": "allow",
-          "git grep*": "allow",
-          "git ls-files*": "allow",
-          "git rev-parse*": "allow",
-          "git shortlog*": "allow",
-          "make": "allow",
-          "make *": "allow",
-        }
-      }
-    },
-    "producer": {
-      "mode": "subagent",
-      "steps": 18, // Limits the agent from going on a thinking spiral.
-      "permission": {
-        "question": "deny",
-        // Forbid the producer from spawning subagents.
-        "task": {
-          "*": "deny"
-        },
-        "edit": {
-          "*": "allow",
-          "*_test.*": "deny",
-          "**/*_test.*": "deny"
-        },
-        "bash": {
-          "*": "deny",
-          "sed*": "deny",
-          "awk*": "deny",
-          "rm*": "deny",
-          "*rm*": "deny",
-          "ls *": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "grep*": "allow",
-          "find *": "allow",
-          "rg*": "allow",
-          "xargs": "allow",
-          "cd *": "allow",
-          "go test*": "allow",
-          "go vet*": "allow",
-          "go build*": "allow",
-          "go tool*": "allow",
-          "go mod*": "allow",
-          "go fmt*": "allow",
-          "golangci-lint *": "allow",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git blame*": "allow",
-          "git grep*": "allow",
-          "git ls-files*": "allow",
-          "git rev-parse*": "allow",
-          "git shortlog*": "allow",
-          "make": "allow",
-          "make *": "allow",
-        }
-      }
-    }
   },
-  // Glob rules: * matches any except / and leading dot.  ** matches everything including /.  .env* matches .env but *.env* does not (leading dot).  Last matching rule wins.
-  "permission": {
-    "external_directory": {
-      "/tmp": "allow",
-      "/tmp/**": "allow"
-    },
-    "question": "deny",
-    "websearch": "allow",
-    // safeguards
-    "read": {
-      "*": "allow",
-      "* .env": "deny",
-      "* .env *": "deny",
-      ".env*": "deny",
-      "**/.env*": "deny",
-      "*.env.*": "deny",
-      "*.env.example": "allow",
-      ".**/*.env*": "deny",
-      ".ssh/**": "deny",
-      "**/id_rsa": "deny",
-      "**/id_ed25519": "deny",
-      "**/credentials": "deny",
-      "**/secrets.*": "deny",
-      "**/.ssh/**": "deny"
-    },
-    "bash": {
-      "cat *.env*": "deny",
-      "cat .env*": "deny",
-      "cat **/.env*": "deny",
-      "cat ./*.env*": "deny",
-      "cat .ssh/*": "deny",
-      "cat **/id_rsa*": "deny",
-      "cat **/credentials": "deny",
-      "head *.env*": "deny",
-      "head .env*": "deny",
-      "head **/.env*": "deny",
-      "head ./*.env*": "deny",
-      "tail *.env*": "deny",
-      "tail .env*": "deny",
-      "tail **/.env*": "deny",
-      "tail ./*.env*": "deny",
-      "less *.env*": "deny",
-      "less .env*": "deny",
-      "less **/.env*": "deny",
-      "less ./*.env*": "deny",
-      "more *.env*": "deny",
-      "more .env*": "deny",
-      "more **/.env*": "deny",
-      "more ./*.env*": "deny",
-      "nl *.env*": "deny",
-      "nl .env*": "deny",
-      "nl **/.env*": "deny",
-      "rev *.env*": "deny",
-      "rev .env*": "deny",
-      "rev **/.env*": "deny",
-      "sort *.env*": "deny",
-      "sort .env*": "deny",
-      "sort **/.env*": "deny",
-      "od *.env*": "deny",
-      "od .env*": "deny",
-      "od **/.env*": "deny",
-      "xxd *.env*": "deny",
-      "xxd .env*": "deny",
-      "xxd **/.env*": "deny",
-      "printenv": "deny",
-      "env": "deny",
-      "sudo *": "deny",
-      "sudo": "deny",
-      "git commit *--no-verify*": "deny",
-      "*<<*": "deny",
-      "python* -c*": "deny",
-      "node* -e*": "deny",
-      "node* --eval*": "deny",
-      "rm -f *": "ask",
-      "rm -rf *": "ask",
-      "rm -fr *": "ask"
-    },
-  },
-  "plugin": [
+
+
+  "plugins": [
     "./plugins/caveman/plugin.js",
     "/home/benkalmus/work/opencode-scrub-session-plugin/scrub-session.js",
-    // "./plugins/smartsnip.ts",
     "@tarquinen/opencode-dcp@latest",
+    // "./plugins/smartsnip.ts",
     // "./plugin/context-usage.ts",
   ],
-  "provider": {
-    // "openrouter": {
-    //   "api": "https://openrouter.ai/api/v1",
-    //   "options": {
-    //     "apiKey": "{env:OPENROUTER_API_KEY}",
-    //     "baseURL": "https://openrouter.ai/api/v1"
-    //   },
-    //   "models": {
-    //     "deepseek/deepseek-v4-flash": {
-    //       "name": "DeepSeek V4 Flash 0423",
-    //       "limit": {
-    //         "context": 1048576,
-    //         "output": 65536
-    //       }
-    //     }
-    //   }
-    // },
+
+  "providers": {
+    "openrouter": {
+      "package": "@opencode/ai/providers/openrouter",
+      "settings": {
+        "apiKey": "{env:OPENROUTER_API_KEY}",
+        "baseURL": "https://openrouter.ai/api/v1"
+      },
+      "models": {
+        "deepseek/deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash 0423",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        }
+      }
+    },
+
     "llama-cpp": {
-      "api": "http://cachyos.local:9900/v1",
-      "options": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
         "apiKey": "noop",
         "baseURL": "http://cachyos.local:9900/v1"
       },
@@ -388,30 +129,39 @@
             "context": 80000,
             "output": 10000
           },
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": true
             }
           },
-          "variants": {
-            "low": {
-              "chat_template_kwargs": {
-                "enable_thinking": false
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "chat_template_kwargs": {
+                  "enable_thinking": false
+                }
               }
             },
-            "medium": {
-              "chat_template_kwargs": {
-                "enable_thinking": true
-              },
-              "reasoning_budget_tokens": 8000
+            {
+              "id": "medium",
+              "settings": {
+                "chat_template_kwargs": {
+                  "enable_thinking": true
+                },
+                "reasoning_budget_tokens": 8000
+              }
             },
-            "high": {
-              "chat_template_kwargs": {
-                "enable_thinking": true
-              },
-              "reasoning_budget_tokens": 16000
+            {
+              "id": "high",
+              "settings": {
+                "chat_template_kwargs": {
+                  "enable_thinking": true
+                },
+                "reasoning_budget_tokens": 16000
+              }
             }
-          }
+          ]
         },
         "ornith-1.0": {
           "name": "ornith-1.0",
@@ -429,5 +179,207 @@
         }
       }
     }
-  }
+  },
+
+  // Glob rules: * matches everything including /. ? matches exactly one char. Last matching rule wins.
+  // One V2 pattern covers all depths, so per-tool single rules replace the old per-path walls.
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "/tmp",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/tmp/**",
+      "effect": "allow"
+    },
+    {
+      "action": "question",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "websearch",
+      "resource": "*",
+      "effect": "allow"
+    },
+    // safeguards
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "*.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "*.env.example",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": ".ssh/**",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/id_rsa",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/id_ed25519",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/credentials",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/secrets.*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/.ssh/**",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "cat *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "head *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "tail *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "less *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "more *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "nl *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "rev *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "sort *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "od *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "xxd *.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "cat *.ssh*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "cat *id_rsa*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "cat *id_ed25519*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "cat *credentials*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "printenv",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "env",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "sudo *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "sudo",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git commit *--no-verify*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "*<<*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "python* -c*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "node* -e*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "node* --eval*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "rm -f *",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rm -rf *",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rm -fr *",
+      "effect": "ask"
+    },
+  ]
+
 }
