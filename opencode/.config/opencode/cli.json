@@ -17,7 +17,8 @@
     "session.new": "ctrl+n",
     // closest V2 equivalent of the old tool_details toggle.
     "session.verbosity.cycle": "<leader>w",
-    "agent.cycle": ["tab", "shift+tab"],
+    "agent.cycle": ["shift+tab"],
+    "agent.cycle.reverse": ["tab"],
     // ctrl+o now opens the model list, so the recent sessions menu loses its default.
     "open.menu": "none",
     // <leader>w now cycles transcript verbosity, so tab close loses its default.
