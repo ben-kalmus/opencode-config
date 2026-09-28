@@ -3,7 +3,9 @@
   "theme": {
     "name": "tokyonight"
   },
-  "session.toggle.exploration_grouping": "none",
+  "session": {
+    "toggle.exploration_grouping": "none"
+  },
   // sound when a question is asked.
   "attention": {
     "sound": true
@@ -26,5 +28,5 @@
     // ctrl+b is the leader key, so backgrounding loses its default.
     "session.background": "none"
   },
-  "plugins": ["@tarquinen/opencode-dcp@latest", "opencode-subagent-statusline", "/home/benkalmus/work/opencode-openrouter-stats"]
+  "plugins": ["opencode-subagent-statusline", "/home/benkalmus/work/opencode-openrouter-stats"]
 }
