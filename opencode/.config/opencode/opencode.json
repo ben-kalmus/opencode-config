@@ -63,7 +63,7 @@
 
 
   "plugins": [
-    // "/home/benkalmus/work/opencode-scrub-session-plugin/scrub-session.js",
+    "/home/benkalmus/work/opencode-scrub-session-plugin",
     "@tarquinen/opencode-dcp@latest",
   ],
 
