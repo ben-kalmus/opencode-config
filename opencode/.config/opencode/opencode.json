@@ -66,26 +66,10 @@
     "@tarquinen/opencode-dcp@latest",
   ],
   "providers": {
-    "openrouter": {
-      "package": "@opencode/ai/providers/openrouter",
-      "settings": {
-        "apiKey": "{env:OPENROUTER_API_KEY}",
-        "baseURL": "https://openrouter.ai/api/v1"
-      },
-      "models": {
-        "deepseek/deepseek-v4-flash": {
-          "name": "DeepSeek V4 Flash 0423",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        }
-      }
-    },
-
     "enablers": {
       "package": "@opencode/ai/providers/openai-compatible",
       "name": "Enablers",
+      "env": ["ENABLERS_JWT"],
       "settings": {
         "apiKey": "{env:ENABLERS_JWT}",
         "baseURL": "https://inference.api.enablers.algolia.net/v1"
@@ -94,7 +78,7 @@
         "xlarge": {
           "name": "GLM-5.2",
           "limit": {
-            "context": 1048576,
+            "context": 300000,
             "output": 262144
           }
         }
@@ -108,38 +92,17 @@
         "baseURL": "http://localhost:9900/v1"
       },
       "models": {
-        "qwen-3.6-35b-a3b": {
-          "name": "Qwen 3.6 35B A3B MoE",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
-        "qwen-3.6-35b-q4-mtp": {
-          "name": "qwen-3.6-35b-q4-mtp",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
         "qwen-3.6-27b": {
           "name": "Qwen 3.6 27B",
           "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
-        "qwen-3.6-27b-fable": {
-          "name": "qwen-3.6-27b-fable",
-          "limit": {
-            "context": 80000,
+            "context": 65000,
             "output": 10000
           }
         },
         "qwen-3.8-27b-q4": {
           "name": "Qwen 3.8 27B Q4",
           "limit": {
-            "context": 80000,
+            "context": 65000,
             "output": 10000
           },
           "settings": {
@@ -175,20 +138,6 @@
               }
             }
           ]
-        },
-        "ornith-1.0": {
-          "name": "ornith-1.0",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
-        },
-        "qwen-3.8-27b-vllm": {
-          "name": "Qwen 3.8 27B (vLLM)",
-          "limit": {
-            "context": 80000,
-            "output": 10000
-          }
         }
       }
     }
