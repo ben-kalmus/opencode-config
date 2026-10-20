@@ -79,12 +79,20 @@
       },
       "models": {
         "xlarge": {
-          "name": "GLM-5.2",
+          "name": "Xlarge - GLM-5.3-Flash",
           "limit": {
-            "context": 300000,
+            "context": 400000,
+            "output": 262144
+          }
+        },
+        "large": {
+          "name": "Large",
+          "limit": {
+            "context": 400000,
             "output": 262144
           }
         }
+
       }
     },
 
