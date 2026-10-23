@@ -182,7 +182,7 @@ Unless it's table-driven, then tests should follow:
 ```
 
 No branching at any point between testcases!
-Use the above skeleton for EVERY test written or edited. Each section should begin with the above comment //.
+Use the above skeleton for EVERY test written or edited. Each section should conform to this structure. Include the comments for: // Setup // Action // Assert.
 
 ## Code Simplicity
 - Keep cyclomatic complexity as small as possible. One function does one thing. Split before branching grows.
