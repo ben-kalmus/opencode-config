@@ -23,46 +23,122 @@ permissions:
     effect: deny
   - action: shell
     resource: "*"
+    effect: allow
+  # Last match wins, so these denies override the broad allow above.
+  - action: shell
+    resource: rm *
     effect: deny
   - action: shell
-    resource: ls
-    effect: allow
+    resource: mv *
+    effect: deny
   - action: shell
-    resource: head*
-    effect: allow
+    resource: cp *
+    effect: deny
   - action: shell
-    resource: tail*
-    effect: allow
+    resource: tee *
+    effect: deny
   - action: shell
-    resource: grep*
-    effect: allow
+    resource: touch *
+    effect: deny
   - action: shell
-    resource: find
-    effect: allow
+    resource: mkdir *
+    effect: deny
   - action: shell
-    resource: time
-    effect: allow
+    resource: rmdir *
+    effect: deny
   - action: shell
-    resource: rg
-    effect: allow
+    resource: chmod *
+    effect: deny
   - action: shell
-    resource: cd
-    effect: allow
+    resource: chown *
+    effect: deny
   - action: shell
-    resource: make
-    effect: allow
+    resource: ln *
+    effect: deny
   - action: shell
-    resource: make *
-    effect: allow
+    resource: dd *
+    effect: deny
   - action: shell
-    resource: go *
-    effect: allow
+    resource: install *
+    effect: deny
   - action: shell
-    resource: git *
-    effect: allow
+    resource: truncate *
+    effect: deny
   - action: shell
-    resource: golangci-lint *
-    effect: allow
+    resource: "* >*"
+    effect: deny
+  - action: shell
+    resource: "*>>*"
+    effect: deny
+  - action: shell
+    resource: sed *-i*
+    effect: deny
+  - action: shell
+    resource: perl *-i*
+    effect: deny
+  - action: shell
+    resource: git add*
+    effect: deny
+  - action: shell
+    resource: git commit*
+    effect: deny
+  - action: shell
+    resource: git checkout*
+    effect: deny
+  - action: shell
+    resource: git switch*
+    effect: deny
+  - action: shell
+    resource: git reset*
+    effect: deny
+  - action: shell
+    resource: git restore*
+    effect: deny
+  - action: shell
+    resource: git clean*
+    effect: deny
+  - action: shell
+    resource: git stash*
+    effect: deny
+  - action: shell
+    resource: git rm*
+    effect: deny
+  - action: shell
+    resource: git mv*
+    effect: deny
+  - action: shell
+    resource: git push*
+    effect: deny
+  - action: shell
+    resource: git pull*
+    effect: deny
+  - action: shell
+    resource: git rebase*
+    effect: deny
+  - action: shell
+    resource: git merge*
+    effect: deny
+  - action: shell
+    resource: git cherry-pick*
+    effect: deny
+  - action: shell
+    resource: git apply*
+    effect: deny
+  - action: shell
+    resource: git am*
+    effect: deny
+  - action: shell
+    resource: git tag*
+    effect: deny
+  - action: shell
+    resource: go generate*
+    effect: deny
+  - action: shell
+    resource: go get*
+    effect: deny
+  - action: shell
+    resource: go fmt*
+    effect: deny
 # steps: 45	# can error on some providers that don't support tool_choice "none".
 # The auditor may only launch read-only explorers.
 ---
@@ -75,11 +151,11 @@ Do not invent compatibility requirements, hypothetical robustness requirements, 
 
 ## Permission boundaries
 
-Follow the global AGENTS.md permission safeguards even when shell allowlists override configured denies.
+Follow the global AGENTS.md permission safeguards even when a broad shell allow overrides configured denies.
 - All edits are blocked because review must remain independent and read-only.
 - Only `scout` and `explore` delegation is allowed because delegated review must remain read-only.
-- Shell commands outside the frontmatter allowlist are blocked to limit execution during review.
-- Allowed Git, Go, and Make commands do not authorize file changes or bypass shared safeguards.
+- Shell commands that change files or repository state are blocked because review must remain read-only.
+- Other shell commands (for example `gocyclo`) are allowed and do not authorize file changes or bypass shared safeguards.
 
 ## Team roles
 
