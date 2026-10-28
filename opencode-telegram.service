@@ -6,10 +6,9 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/home/benkalmus/
-ExecStart=/bin/sh -c 'opencode service start; npx @grinev/opencode-telegram-bot'
+ExecStart=/bin/sh -c 'set -a; . /home/benkalmus/.config/.env; set +a; export OPENCODE_SERVER_USERNAME=opencode; opencode service start; export OPENCODE_SERVER_PASSWORD="$(opencode service get password)"; exec npx --yes @grinev/opencode-telegram-bot@0.26.6'
 Restart=always
 RestartSec=30
-EnvironmentFile=/home/benkalmus/.config/.env
 Environment=OPENCODE_ENABLE_EXA=1
 Environment=NODE_ENV=production
 Environment=PATH=/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/sbin:/home/linuxbrew/.linuxbrew/bin:/snap/bin

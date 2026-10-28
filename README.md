@@ -89,10 +89,11 @@ npx @grinev/opencode-telegram-bot
 ```env
 OPENCODE_SERVER_VERSION=v2
 OPENCODE_API_URL=http://127.0.0.1:49374
-OPENCODE_SERVER_PASSWORD=<output of `opencode service get password`>
 ```
 
-The password is stored in `~/.config/opencode/service.json` and survives restarts. Set your own with `opencode service set password <value>` (this stops the background service once). The standalone `opencode serve` prints a new password on every start, so point the bot at the background service, not a standalone server.
+The service injects `OPENCODE_SERVER_PASSWORD` from `opencode service get password` at startup. The password then comes from `~/.config/opencode/service.json`, so it survives restarts and cannot drift from the server. The username defaults to `opencode`. If you run the bot by hand, set `OPENCODE_SERVER_PASSWORD` yourself. `opencode service set password <value>` changes the stored password (this stops the background service once). The standalone `opencode serve` prints a new password on every start, so point the bot at the background service, not a standalone server.
+
+The service pins `@grinev/opencode-telegram-bot@0.26.6`. Bump the pin in `opencode-telegram.service` to update the bot.
 
 3. Symlink the service file:
 
