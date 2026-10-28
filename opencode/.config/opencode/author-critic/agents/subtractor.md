@@ -12,49 +12,70 @@ permissions:
     resource: "*"
     effect: allow
   - action: shell
-    resource: sed -i*
+    resource: "sed *-i*"
     effect: deny
   - action: shell
-    resource: "awk* > *"
+    resource: "awk*>*"
     effect: deny
   - action: shell
-    resource: "awk -i*"
+    resource: "awk *-i*"
     effect: deny
   - action: shell
-    resource: cat >*
+    resource: "cat >*"
     effect: deny
   - action: shell
-    resource: echo > *
+    resource: "echo *>*"
     effect: deny
   - action: shell
     resource: "*<<*"
     effect: deny
   - action: shell
-    resource: "python *"
+    resource: "python -c*"
     effect: deny
   - action: shell
-    resource: "python3 *"
+    resource: "python3 -c*"
     effect: deny
   - action: shell
-    resource: "python3.* *"
+    resource: "python3.* -c*"
     effect: deny
   - action: shell
-    resource: "node *"
+    resource: "node -e*"
     effect: deny
   - action: shell
-    resource: "bun *"
+    resource: "node --eval*"
     effect: deny
   - action: shell
-    resource: "deno *"
+    resource: "node -p*"
     effect: deny
   - action: shell
-    resource: "perl *"
+    resource: "node --print*"
     effect: deny
   - action: shell
-    resource: "ruby *"
+    resource: "bun -e*"
     effect: deny
   - action: shell
-    resource: "php *"
+    resource: "bun --eval*"
+    effect: deny
+  - action: shell
+    resource: "bun -p*"
+    effect: deny
+  - action: shell
+    resource: "bun --print*"
+    effect: deny
+  - action: shell
+    resource: "deno eval*"
+    effect: deny
+  - action: shell
+    resource: "perl -e*"
+    effect: deny
+  - action: shell
+    resource: "perl -E*"
+    effect: deny
+  - action: shell
+    resource: "ruby -e*"
+    effect: deny
+  - action: shell
+    resource: "php -r*"
     effect: deny
   - action: shell
     resource: "bash -c*"
@@ -73,12 +94,6 @@ permissions:
     effect: deny
   - action: shell
     resource: "xargs *"
-    effect: deny
-  - action: shell
-    resource: "go run *"
-    effect: deny
-  - action: shell
-    resource: "go generate *"
     effect: deny
 ---
 

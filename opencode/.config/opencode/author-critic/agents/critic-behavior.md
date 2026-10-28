@@ -13,19 +13,19 @@ permissions:
     resource: "*<<*"
     effect: deny
   - action: shell
-    resource: "sed -i*"
+    resource: "sed *-i*"
     effect: deny
   - action: shell
-    resource: "awk* > *"
+    resource: "awk*>*"
     effect: deny
   - action: shell
-    resource: "awk -i*"
+    resource: "awk *-i*"
     effect: deny
   - action: shell
-    resource: "cat > *"
+    resource: "cat >*"
     effect: deny
   - action: shell
-    resource: "echo > *"
+    resource: "echo *>*"
     effect: deny
   - action: shell
     resource: "tee *"
@@ -73,12 +73,6 @@ permissions:
     resource: "git push *"
     effect: deny
   - action: shell
-    resource: "go run *"
-    effect: deny
-  - action: shell
-    resource: "go generate *"
-    effect: deny
-  - action: shell
     resource: "go build *"
     effect: deny
   - action: shell
@@ -97,31 +91,61 @@ permissions:
     resource: "gopls execute*"
     effect: deny
   - action: shell
-    resource: "bash *"
+    resource: "bash -c*"
     effect: deny
   - action: shell
-    resource: "sh *"
+    resource: "sh -c*"
     effect: deny
   - action: shell
-    resource: "zsh *"
+    resource: "zsh -c*"
     effect: deny
   - action: shell
-    resource: "python*"
+    resource: "python -c*"
     effect: deny
   - action: shell
-    resource: "node*"
+    resource: "python3 -c*"
     effect: deny
   - action: shell
-    resource: "bun *"
+    resource: "python3.* -c*"
     effect: deny
   - action: shell
-    resource: "perl *"
+    resource: "node -e*"
     effect: deny
   - action: shell
-    resource: "ruby *"
+    resource: "node --eval*"
     effect: deny
   - action: shell
-    resource: "php *"
+    resource: "node -p*"
+    effect: deny
+  - action: shell
+    resource: "node --print*"
+    effect: deny
+  - action: shell
+    resource: "bun -e*"
+    effect: deny
+  - action: shell
+    resource: "bun --eval*"
+    effect: deny
+  - action: shell
+    resource: "bun -p*"
+    effect: deny
+  - action: shell
+    resource: "bun --print*"
+    effect: deny
+  - action: shell
+    resource: "deno eval*"
+    effect: deny
+  - action: shell
+    resource: "perl -e*"
+    effect: deny
+  - action: shell
+    resource: "perl -E*"
+    effect: deny
+  - action: shell
+    resource: "ruby -e*"
+    effect: deny
+  - action: shell
+    resource: "php -r*"
     effect: deny
   - action: shell
     resource: "xargs *"
@@ -131,9 +155,6 @@ permissions:
     effect: deny
   - action: shell
     resource: "source *"
-    effect: deny
-  - action: shell
-    resource: "./*"
     effect: deny
 ---
 
