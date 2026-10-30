@@ -138,10 +138,13 @@ A change that needs any of these goes back, even when it looks small.
 - Run the tests for every package that contains a caller, not only the changed package.
 - Read the diff, then the survivor and its callers. The duplicate may live outside the diff.
 - Choose the survivor the item names. If it names none, prefer the existing canonical vocabulary. If two candidates are equally valid, return the item instead of guessing.
-- Inline a helper that only forwards arguments or repeats the caller's work. Keep one whose name carries a responsibility the item does not ask to remove.
+- Inline a named one-line helper that only forwards or rebinds arguments. Keep it only when it is a widely reused global utility. A package-private policy name is not enough.
 - Merge duplicates into the survivor. Delete the other path, its types, and its imports.
 - Generalize the survivor when the new caller needs a form it does not accept. Update every caller.
 - Refactor tests to the new shape.
+- Merge a new test file into an existing test file when the new file covers the same subject and has no independent concern.
+- A test you add or rewrite asserts the full observable contract of the criterion, not only the field the subtraction touched. If it passes with the survivor reverted, it is not evidence.
+- After deleting a symbol, check the defining package for helpers that lost their last caller. Delete them.
 - Stop on a test failure you cannot fix without changing behavior. Return the item.
 - Do not refactor beyond the item.
 - Confirm the item still matches the code before the first edit.
@@ -158,6 +161,7 @@ Name the action the implementer must take: signature approval, an exported renam
 The duplicate is gone at the source.
 Report items done, items returned, names removed, and net line change.
 Report the refactor in one line per survivor, naming the callers updated.
+For each new or rewritten test, name the criterion observable it proves.
 If an item fails verification, report it as returned rather than done.
 
 # Example
