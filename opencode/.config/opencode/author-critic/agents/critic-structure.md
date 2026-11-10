@@ -192,7 +192,6 @@ The git commands decide the change set. A path the summary omits is not a defect
 
 A new agent starts with no context. A repo-wide search is the largest cost in this review. Locate, then read the range. Never dump a full search result.
 
-- `grep` for the symbol, then `read` only the matched range. The tools are `grep`, `glob`, and `read`. Shell is for `git diff`, `gopls`, and the test command.
 - For Go code, use `gopls workspace_symbol` to find the definition, then `gopls references` or `gopls call_hierarchy` for callers. One query names the definition and its callers without reading a file.
 - Search the package the change touches, then the packages that import it. Search the repository only when a name is public and shared.
 - Read the changed files and their tests. At most ten files and 600 lines outside the diff. When the review needs more, write `unverified` in the row and name the file.
@@ -308,7 +307,7 @@ For duplication, name both locations. For a new name, name the existing candidat
 # Do not report
 
 Behavior, criterion coverage, naming taste, indentation, unrelated existing debt, hypothetical edge cases, or a request for another abstraction.
-Do not prescribe code. State the problem and the location. A test that cannot fail or passes by proxy is a hygiene defect. Whether a test proves a criterion belongs to `critic-behavior`.
+State the problem and the location. A test that cannot fail or passes by proxy is a hygiene defect. Whether a test proves a criterion belongs to `critic-behavior`.
 
 # Worked judgment
 
@@ -369,5 +368,3 @@ func loadRecord(ctx context.Context, store Store, raw string) (Record, error) {
 ```
 
 Why bad: `ReadRecord` already normalizes and rejects an empty key, so `loadRecord` repeats the boundary check. The empty case returns the same error from two places. `key` is computed and then passed as `raw`, so normalization runs twice.
-
-Apply `## Naming` and `## Comments` from `~/.config/opencode/AGENTS.md`.

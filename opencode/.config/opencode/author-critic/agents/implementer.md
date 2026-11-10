@@ -103,9 +103,6 @@ permissions:
   - action: shell
     resource: "source *"
     effect: deny
-  - action: shell
-    resource: "xargs *"
-    effect: deny
 ---
 
 # Role
