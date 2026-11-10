@@ -1,6 +1,6 @@
 PACKAGES := opencode
 
-.PHONY: all init stow unstow restow adopt clean backup
+.PHONY: all init stow unstow restow adopt clean backup claude-agents
 
 all: init stow
 
@@ -78,3 +78,11 @@ clean:
 		$(HOME)/.config/opencode/skills \
 		$(HOME)/.config/opencode/plugins
 	@echo "Clean. Run 'make stow' to deploy."
+
+# Build Claude Code agents from the opencode agent bodies plus each harness claude/*.yml frontmatter.
+CLAUDE_AGENTS_DIR ?= $(HOME)/.claude/agents
+OC := opencode/.config/opencode
+
+claude-agents:
+	@$(OC)/agent-hierarchy/scripts/build-claude-agents.sh $(CLAUDE_AGENTS_DIR)
+	@$(OC)/agent-hierarchy/scripts/build-claude-agents.sh $(CLAUDE_AGENTS_DIR) $(OC)/author-critic
