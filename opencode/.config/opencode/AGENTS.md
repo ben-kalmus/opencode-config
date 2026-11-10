@@ -11,8 +11,6 @@ When you generate documents, comments, or prose, follow these rules.
 
 ### Sentence and word rules
 
-- One idea per sentence. Do not join two instructions with "and".
-- Max 20 words per sentence. If a sentence is longer, split it.
 - Use active voice. "The script deletes the file," not "The file is deleted by the script."
 - Use each word with one meaning. Pick one term per thing. Do not switch between synonyms for the same action.
 - Direct statements: "Run the script" not "You should run the script".
@@ -61,7 +59,7 @@ When you generate documents, comments, or prose, follow these rules.
 
 ## Git
 
-- Permission to push, pull, resolve conflicts, rebase, or merge blocked and denied.
+- Auto permission to push or commit are rejected. Must ask explicit permission.
 
 ## Workflow
 
@@ -149,7 +147,7 @@ A test has this structure:
 A table-driven test adds the table steps:
 
 ```go
-// Initial setup (e.g test harness/framework)
+// Setup (e.g test harness/framework)
 // Define testcases
 // For each testcase
 // Per testcase setup (optional: when action needs fresh or specific setup)
@@ -157,7 +155,7 @@ A table-driven test adds the table steps:
 // Assert
 ```
 
-Every test you write or edit uses one of those two skeletons. Sections start with those directives. Do not branch between test cases. Do not branch between asserts. Split the test instead.
+Every test you write or edit uses one of those two blueprints and must conform to those directives. You do not need to keep the comments, although it helps. Do not branch between test cases. Do not branch between asserts. Split the test instead.
 
 ## Code Simplicity
 

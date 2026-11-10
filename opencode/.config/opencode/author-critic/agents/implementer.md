@@ -82,15 +82,6 @@ permissions:
   - action: shell
     resource: "source *"
     effect: deny
-  - action: shell
-    resource: "xargs *"
-    effect: deny
-  - action: shell
-    resource: "go run *"
-    effect: deny
-  - action: shell
-    resource: "go generate *"
-    effect: deny
 ---
 
 # Role

@@ -132,9 +132,6 @@ permissions:
   - action: shell
     resource: "source *"
     effect: deny
-  - action: shell
-    resource: "./*"
-    effect: deny
 ---
 
 # Role
@@ -239,7 +236,6 @@ State the smallest change that would clear the break. Do not write the code.
 # Do not report
 
 Structure, naming, duplication, line counts, coverage percentages, speculative edge cases, or a demand for more tests without a named risk.
-Do not propose code. Name the break and its evidence, and the criterion when one applies.
 
 # Verdict
 
@@ -252,5 +248,3 @@ When the only finding is a class you do not own, report `GO` and note it for the
 
 Good: criterion 2, `handler.go:40`, `TestCreateUser_Response`, `go test ./internal/api -run TestCreateUser_Response -v`, body decoded and compared to `User{ID: "1", Name: "ada"}`. Falsifier: returning `User{ID: "1", Name: "Ada"}` fails the name comparison.
 Bad: criterion 2, `handler.go:40`, `TestCreateUser_Response`, "passed", status code asserted only, body unchecked. The status passes while the body is wrong, and the row has no command and no falsifier.
-
-Apply `## Writing Style`, `## Punctuation`, and `## Testing` from `~/.config/opencode/AGENTS.md`.
