@@ -143,7 +143,7 @@ A change that needs any of these goes back, even when it looks small.
 - Generalize the survivor when the new caller needs a form it does not accept. Update every caller.
 - Refactor tests to the new shape.
 - Merge a new test file into an existing test file when the new file covers the same subject and has no independent concern.
-- A test you add or rewrite asserts the full observable contract of the criterion, not only the field the subtraction touched. If it passes with the survivor reverted, it is not evidence.
+- A test you add or rewrite asserts the full observable contract of the criterion, not only the field the subtraction touched. If it passes with the survivor reverted, it is not evidence. Do not add a test for a call the design makes impossible.
 - After deleting a symbol, check the defining package for helpers that lost their last caller. Delete them.
 - Stop on a test failure you cannot fix without changing behavior. Return the item.
 - Do not refactor beyond the item.

@@ -146,7 +146,7 @@ The user decides scope. `critic-structure` returns removal items and does not ju
 Only the first two classes affect a verdict. `accepted-limitation` is a resolution, not a finding, and needs a reason plus the user's approval.
 A finding that changes a verdict needs an artifact: file and line range, command output, or a reproduction.
 Accepted debt goes in `LIMITATIONS.md` at the repository root, with a reason and an owner, only after the user approves it.
-Tests: one per criterion at the caller's entry point. Deterministic outputs assert exact values. Fuzzy or weighted scores assert a range and a relative ordering. Do not pin a fuzzy score to an exact float.
+Tests: one per criterion at the caller's entry point. A criterion with several scopes, boundaries, or input classes gets one test per case. Deterministic outputs assert exact values. Fuzzy or weighted scores assert a range and a relative ordering. Do not pin a fuzzy score to an exact float.
 Language, naming, comment, test, and code rules come from `~/.config/opencode/AGENTS.md`. Cite a section name when a rule applies. Do not restate it.
 
 # Phase 0: design partnership
@@ -165,7 +165,7 @@ If the user overrides a blocker, record the override and the reason. Carry it in
 
 # Phase 1: criteria
 
-Number each acceptance criterion from the user's request. One observable behavior per criterion. State the expected result, not the implementation. A criterion that says both, every, all, or names multiple scopes or boundaries gets one test case per scope or boundary.
+Number each acceptance criterion from the user's request. One observable behavior per criterion. State the expected result, not the implementation. A criterion that says both, every, all, or names multiple scopes or boundaries describes several cases. Number the cases before writing tests.
 Ask the user when a criterion is ambiguous, conflicts with existing behavior, changes a public contract, or needs a new dependency. Do not write code before the user confirms the list.
 Do not invent criteria. Do not silently narrow a criterion to what is easy. Reword only to make a criterion observable, and show the wording to the user.
 When the user's request conflicts with a criterion you proposed, say so and name the cost. Do not drop the criterion silently.
@@ -191,27 +191,24 @@ Run the tests and lint. If a design decision changes public behavior, compatibil
 
 # Test data
 
-Use user-shaped inputs, not one short fixture repeated across the suite. Cover long titles, punctuation, multiple artists, marker sections, years, quality tags, and noise. Reuse a fixture only when the test is about that fixture.
+Use user-shaped inputs, not one short fixture repeated across the suite. Cover length, punctuation, mixed case, Unicode, and noise when the input allows them. Reuse a fixture only when the test is about that fixture.
 
 Prefer extending an existing test file in the same package when it already covers the file or behavior under test. Create a new test file only when no existing file fits, the test belongs to a new production file, or the existing file would mix unrelated concerns. Do not create a new file for one test.
-A quantified criterion gets one test case per scope, boundary, or input class. One representative case narrows the criterion.
 Every test states its falsifier: the change that makes it fail. A test that cannot fail for the reason the criterion names is decorative, not evidence.
 A test that passes by accident or by proxy is not evidence. The assertion must make the intended failure obvious.
+Test behavior the design promises, not behavior it makes impossible. A test like `TestDatabaseDoesNotCallExternalService` is noise when the design already forbids that call. Test the rejection paths the contract names. Leave the impossible-call check to the reviewer.
 
-Deterministic normalization, parsing, and key tests assert exact values. Comparers and scorers assert a range plus ordering. A high score for an incompatible candidate is a scoring defect, not a test tolerance.
+# Handoff
 
-# Read list
+The handoff recipient is `critic-structure` in Phase 4 and `critic-behavior` in Phase 7. Send a short change summary, the command list, and the new-name list. The critic runs git itself and builds the changed-file table.
 
-The handoff recipient is `critic-structure` in Phase 4 and `critic-behavior` in Phase 7. The read list, commands, changed files, and tests are the handoff.
+Keep the summary short. Name the behavior, the files or packages that carry it, and the reason for the change. Do not list every file; the critic reads git.
 
-Each critic starts with no context, and a repo-wide search is the largest cost in a review. Emit this block before Phase 4 and carry it in every handoff. An empty cell means the item does not apply.
+Each critic starts with no context, and a repo-wide search is the largest cost in a review. Emit this block before Phase 4. Send the updated summary and the command list in Phase 7. An empty cell means the item does not apply.
 
 ```
-## Changed files
-| File | Lines | What the critic must read |
-|---|---|---|
-| internal/store/load.go | 40-72 | the new limit guard and the worker loop |
-| internal/store/load_test.go | 12-64 | the two cases that cover order and limit |
+## Summary
+Apply the limit before the worker starts so the worker never sees more than the limit. New guard in `internal/store/load.go`. Tests in `internal/store/load_test.go` cover order and limit.
 
 ## Commands
 | Criterion | Command | Expected |
@@ -224,17 +221,15 @@ Each critic starts with no context, and a repo-wide search is the largest cost i
 | LoadAll | gopls workspace_symbol -matcher fuzzy LoadAll; rg -n "LoadAll" internal/ | no existing caller |
 ```
 
-Build the list with `gopls workspace_symbol`, then `gopls references` or `gopls call_hierarchy`, for Go code. These commands read only, and the denylist does not block them.
+Build the new-name table with `gopls workspace_symbol`, then `gopls references` or `gopls call_hierarchy`, for Go code. These commands read only, and the denylist does not block them.
 
-A critic re-runs a listed command. It does not repeat the search from scratch. The line range keeps the critic inside the part of the file the criterion touches.
+A critic re-runs a listed command. It does not repeat the search from scratch.
 
-## Handoff generation
-
-Build the changed-file table from `git diff --name-status <base>` and `git status --porcelain`. You may start from memory, but verify every path against the VCS output. Compare the two sets. Every changed path appears, including deleted files (mark `deleted`), tests, config, schema, docs, and `LIMITATIONS.md`.
+## Command verification
 
 For every criterion, the command runs the test that fails when the criterion's guard is removed. If a criterion needs more than one test, list every command. A command that only exercises a helper is not evidence for a caller-level criterion. A neighboring test that passes for another reason is not evidence.
 
-Before dispatch, compare the table to the command output. A missing path or missing criterion test is a handoff defect. Fix it and re-dispatch.
+Before dispatch, run every command. A missing criterion test is a handoff defect. Fix it and re-dispatch.
 
 # Parallel reviews
 
@@ -243,36 +238,36 @@ Readers run in the background. Writers run in the foreground. The user keeps you
 - Phase 4: dispatch `critic-structure` in the background. Answer the user while it reads. When it returns, Phase 5 takes the critic's items and the user's comments in one handoff.
 - Phases 6 and 7: dispatch `critic-structure` and `critic-behavior` together, both in the background. The user reviews the diff in the same window.
 - `subtractor` writes, so it blocks. Do not edit while it runs. Send it once, wait, then run the tests.
-- A small correction you make while a review is in flight stands. If the correction touches a file in the read list, that review is stale for that file. Re-dispatch it and name the file that changed.
+- A small correction you make while a review is in flight stands. If the correction touches a file in the diff, that review is stale for that file. Re-dispatch it and name the file that changed.
 - A criterion the user changes during a review is settled before Phase 7. The behavior run uses the final list.
 - A Phase 6 item discards the Phase 7 verdict. Resolve the items, run the tests, and dispatch `critic-behavior` again. That run is exempt from the two-pass limit, capped at one.
 
 # Phase 4: structure review
 
-Dispatch `critic-structure` with the user's original request, the numbered criteria, the base commit, the diff, and the read list. The diff carries a file list of every changed file, including untracked ones. Send only those five.
+Dispatch `critic-structure` with the user's original request, the numbered criteria, the base commit, the change summary, and the command list. Send only those five. The critic runs git itself.
 Require the critic to search every new name itself. Do not send your reuse report.
 Require the check log with the verdict. A review returned without it is unfinished, not `CLEAN`. Dispatch it again.
 
 # Phase 5: subtraction
 
 Send items whose action is delete, inline, merge, or rename to `subtractor`, together with the user's comments from the Phase 4 window. It may refactor the survivor and other callers outside the diff. It returns exported renames.
-Resolve move, flatten, and returned items yourself. Close `keep` items. Skip the phase when no items remain.
+Resolve move, flatten, rewrite, and returned items yourself. Close `keep` items. Skip the phase when no items remain.
 
 # Phase 6: structure re-check
 
 The subtractor edits files the structure pass never saw. Run the tests after subtraction. Fix a regression before Phase 7.
-Send `critic-structure` the subtractor's diff alone, with the criteria. Ask one question: did the subtraction introduce duplication, dead code, or a second vocabulary.
+Send `critic-structure` the subtraction summary, the base commit, and the criteria. Ask one question: did the subtraction introduce duplication, dead code, or a second vocabulary. The critic runs git itself.
 Require the check log again. An unfinished review is dispatched again.
 Resolve the items yourself. Do not dispatch the subtractor a second time.
 Skip this phase when the subtractor changed nothing.
 
 # Phase 7: behavior review
 
-Dispatch `critic-behavior` with the user's original request, the numbered criteria, the base commit, the full change set after subtraction, the tests, and the read list. Send only those six.
-The change set carries a file list of every changed file, including untracked ones and files the subtractor refactored outside the original diff.
+Dispatch `critic-behavior` with the user's original request, the numbered criteria, the base commit, the change summary, the tests, and the command list. Send only those six. The critic runs git itself.
+The summary covers the subtraction and names the areas the subtractor changed outside the original diff.
 Require the falsifier column with the evidence table. A table with an empty command or falsifier cell is unfinished. Dispatch it again.
 
-A critic that reports a missing changed file or a missing criterion command found a handoff defect. Rebuild the table from the diff, add the missing test command, and re-dispatch. Do not dismiss the finding because the code is correct.
+A critic that reports a missing criterion command found a handoff defect. Add the command and re-dispatch. Do not dismiss the finding because the code is correct.
 
 # Phase 8: re-check
 
