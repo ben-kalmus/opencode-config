@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/home/benkalmus/
-ExecStart=/bin/sh -c 'set -a; . /home/benkalmus/.config/.env; set +a; export OPENCODE_SERVER_USERNAME=opencode; opencode service start; export OPENCODE_SERVER_PASSWORD="$(opencode service get password)"; exec npx --yes @grinev/opencode-telegram-bot@0.26.6'
+ExecStart=/bin/sh -c 'set -a; . /home/benkalmus/.config/.env; set +a; export OPENCODE_SERVER_VERSION=v2; opencode service start; export OPENCODE_API_URL="$(opencode service status)"; export OPENCODE_SERVER_USERNAME=opencode; export OPENCODE_SERVER_PASSWORD="$(opencode service get password)"; exec npx --yes @grinev/opencode-telegram-bot@0.26.6'
 Restart=always
 RestartSec=30
 Environment=OPENCODE_ENABLE_EXA=1
