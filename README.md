@@ -43,7 +43,10 @@ export OPENCODE_ENABLE_EXA=1
 ## Plugins
 
 Already configured:
-- [DCP](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning): Dynamic Context Pruning: significantly reduces context usage by removing tool calls, errors and repeat mistakes.
+- [Magic Context](https://github.com/cortexkit/magic-context): background context management and cross-session project memory. Native compaction is off. The config lives in `cortexkit/.config/cortexkit/magic-context.jsonc` and is deployed by `make stow`.
+- [opencode-handoff](https://github.com/joshuadavidthomas/opencode-handoff): `/handoff <goal>` starts a focused new session with a summary and a file working set.
+
+`make stow` deploys both the `opencode` and `cortexkit` packages. Run `make verify` after `make stow` to check the deployed config.
 
 Consider [superpowers](https://github.com/obra/superpowers). A set of skills to guide development, careful planning, incorporating best practices and without making the same mistakes.
 Navigate to [this page](https://github.com/obra/superpowers/blob/main/docs/README.opencode.md)

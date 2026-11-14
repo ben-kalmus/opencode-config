@@ -1,6 +1,6 @@
-PACKAGES := opencode
+PACKAGES := opencode cortexkit
 
-.PHONY: all init stow unstow restow adopt clean backup
+.PHONY: all init stow unstow restow adopt clean backup verify
 
 all: init stow
 
@@ -14,11 +14,17 @@ stow: backup
 		stow -v -R -t $(HOME) --ignore 'service\.json' --ignore 'cli\.json' $$pkg; \
 	done
 
+verify:
+	@python3 test/verify.py
+
 # Back up only genuine collisions: a real file standing under real directories.
 # Anything living under a symlink belongs to stow's subtree and is left alone.
 backup:
 	@for pkg in $(PACKAGES); do \
 		( cd $$pkg && find . -mindepth 1 \( -type f -o -type l \) | sed 's|^\./||' | while IFS= read -r f; do \
+			case "$$f" in \
+				.config/opencode/cli.json|.config/opencode/service.json) continue ;; \
+			esac; \
 			tgt="$(HOME)/$$f"; \
 			d="$$tgt"; owned=0; \
 			while [ "$$d" != "$(HOME)" ] && [ "$$d" != "/" ]; do \
@@ -53,7 +59,7 @@ adopt:
 sync-cli:
 	@test -f $(HOME)/.config/opencode/cli.json || (echo "no live cli.json"; exit 1)
 	@if [ ! -L $(HOME)/.config/opencode/cli.json ]; then cp $(PWD)/opencode/.config/opencode/cli.json $(HOME)/.config/opencode/cli.json; else echo "link intact, nothing to import"; fi
-	@stow -R -t $(HOME) --ignore 'service\.json' opencode
+	#@stow -R -t $(HOME) --ignore 'service\.json' opencode
 	# @cp $(PWD)/opencode/.config/opencode/cli.json $(HOME)/.config/opencode/cli.json
 	# @ls -l $(HOME)/.config/opencode/cli.json
 
@@ -65,7 +71,6 @@ clean:
 		stow -v -D -t $(HOME) --ignore 'service\.json' --ignore 'cli\.json' $$pkg 2>/dev/null; \
 	done
 	@rm -f $(HOME)/.config/opencode/AGENTS.md \
-		$(HOME)/.config/opencode/dcp.jsonc \
 		$(HOME)/.config/opencode/cli.json \
 		$(HOME)/.config/opencode/opencode.json
 	@rm -rf $(HOME)/.config/opencode/command \

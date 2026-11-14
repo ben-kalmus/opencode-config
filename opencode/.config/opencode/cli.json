@@ -7,7 +7,10 @@
     "toggle.exploration_grouping": "none",
     "sidebar": "hide",
     "permissions": "autoaccept",
-    "grouping": "none"
+    "grouping": "none",
+    "image_preview": true,
+    "verbosity": "medium",
+    "thinking": "hide"
   },
   "attention": {
     "sound": false

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cortexkit/magic-context/master/assets/magic-context.schema.json",
+  // 350k is the force band; the historian's 15% history budget starts earlier.
+  "execute_threshold_tokens": {
+    "default": 350000,
+    "llama-cpp/qwen-3.6-35b-q4-mtp": 65000,
+    "llama-cpp/qwen-3.6-35b-a3b": 65000,
+    "llama-cpp/qwen-3.6-27b": 65000,
+    "llama-cpp/qwen-3.6-27b-fable": 65000,
+    "llama-cpp/ornith-1.0": 65000,
+    "llama-cpp/qwen-3.8-27b-q4": 65000,
+    "llama-cpp/qwen-3.8-27b-vllm": 65000,
+  },
+  // The dreamer runs in a child session, so it needs an explicit model.
+  "dreamer": {
+    "opencode": {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash",
+    },
+  },
+}
