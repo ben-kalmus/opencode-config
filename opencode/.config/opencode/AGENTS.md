@@ -135,6 +135,8 @@ fileID := items[i].ID
 ## Testing
 
 - Write tests to maximize coverage without exponential lines of code. Track repository loc after a task, the same as lint and test.
+- Test the layer you changed. Keep the unit test shallow: it covers that layer's branches and decisions.
+- Name the branch each case reaches. A case that only changes another package's result belongs to that package, not yours. Do not write an input table for a decision another package makes.
 - TABLE DRIVEN TESTS SPLIT ON NEW LINES, NOT ONELINED.
 - Use `t.Context()` in tests, not `context.Background()`.
 

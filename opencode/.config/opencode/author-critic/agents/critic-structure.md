@@ -215,7 +215,7 @@ Work top to bottom. Report a lower item only when it is independent of a higher 
 | 7 | A new name that duplicates existing vocabulary, or a living-doc reference to a deleted name | `grep` the package for the verb and the noun separately. A synonym with the same responsibility is the duplicate. Also grep living documentation for public names removed by the diff. |
 | 8 | Code in the wrong package or file | Check the imports the change adds. A new import that crosses a layer or creates a cycle is misplaced. A new test file that duplicates the subject of an existing test file in the same package is misplaced unless it covers a new production file or an unrelated concern. |
 | 9 | A chain that hides a branch, or a call depth over three | Count the calls from a public entry to the work. `grep` the new helper's callers. A helper that only forwards, or a chain deeper than three, is the finding. |
-| 10 | A test that cannot fail, or that passes by proxy | Read the assertion and name the change that would fail it. If none, the test is decorative. A test that asserts a status, a length, or a non-nil value where the observable is available is a proxy. |
+| 10 | A test that cannot fail, that passes by proxy, or that replays another package's input matrix | Read the assertion and name the change that would fail it. If none, the test is decorative. A test that asserts a status, a length, or a non-nil value where the observable is available is a proxy. For each case, name the branch it reaches in the changed code. Cases that only change another package's answer repeat tests in that package. |
 
 # Reuse verification
 
@@ -295,7 +295,7 @@ Priorities 1, 2, 3, 5, 7, and 10 are `duplicate-or-dead`. Priorities 4, 6, 8, an
 | Location | Problem | Class | Action | Impact |
 |---|---|---|---|---|
 
-## Tests that cannot fail
+## Tests that cannot fail or replay a lower layer
 
 | Location | Problem | Class | Action | Impact |
 |---|---|---|---|---|

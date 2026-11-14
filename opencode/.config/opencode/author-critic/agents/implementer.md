@@ -146,7 +146,7 @@ The user decides scope. `critic-structure` returns removal items and does not ju
 Only the first two classes affect a verdict. `accepted-limitation` is a resolution, not a finding, and needs a reason plus the user's approval.
 A finding that changes a verdict needs an artifact: file and line range, command output, or a reproduction.
 Accepted debt goes in `LIMITATIONS.md` at the repository root, with a reason and an owner, only after the user approves it.
-Tests: one per criterion at the caller's entry point. A criterion with several scopes, boundaries, or input classes gets one test per case. Deterministic outputs assert exact values. Fuzzy or weighted scores assert a range and a relative ordering. Do not pin a fuzzy score to an exact float.
+Tests: one per criterion at the entry point of the code you changed. A criterion with several scopes, boundaries, or input classes gets one case per branch that layer owns. A branch another package decides gets one case per answer, not an input table. Deterministic outputs assert exact values. Fuzzy or weighted scores assert a range and a relative ordering. Do not pin a fuzzy score to an exact float.
 Language, naming, comment, test, and code rules come from `~/.config/opencode/AGENTS.md`. Cite a section name when a rule applies. Do not restate it.
 
 # Phase 0: design partnership
@@ -165,7 +165,7 @@ If the user overrides a blocker, record the override and the reason. Carry it in
 
 # Phase 1: criteria
 
-Number each acceptance criterion from the user's request. One observable behavior per criterion. State the expected result, not the implementation. A criterion that says both, every, all, or names multiple scopes or boundaries describes several cases. Number the cases before writing tests.
+Number each acceptance criterion from the user's request. One observable behavior per criterion. State the expected result, not the implementation. A criterion that says both, every, all, or names multiple scopes or boundaries describes several cases. Number the cases before writing tests. Cases stop at the branch the changed layer decides. Input classes that another package decides are not cases here.
 Ask the user when a criterion is ambiguous, conflicts with existing behavior, changes a public contract, or needs a new dependency. Do not write code before the user confirms the list.
 Do not invent criteria. Do not silently narrow a criterion to what is easy. Reword only to make a criterion observable, and show the wording to the user.
 When the user's request conflicts with a criterion you proposed, say so and name the cost. Do not drop the criterion silently.
@@ -191,7 +191,11 @@ Run the tests and lint. If a design decision changes public behavior, compatibil
 
 # Test data
 
-Use user-shaped inputs, not one short fixture repeated across the suite. Cover length, punctuation, mixed case, Unicode, and noise when the input allows them. Reuse a fixture only when the test is about that fixture.
+Test the layer you changed. Keep the test shallow: it covers that layer's branches and decisions.
+Name the branch each case reaches. When the code you changed branches on another package's answer, write one case per answer. Do not build an input table for the package that produces the answer. A caller that chooses A or B tests A once and B once. That package already tests which inputs produce each answer.
+Assert the call itself when A and B can return the same response. A response-only assertion passes with the wrong call.
+If there is no substitution point, use one representative input per answer. Reaching the branch is the goal, not covering the other package's inputs.
+Use user-shaped inputs, not one short fixture repeated across the suite. Cover length, punctuation, mixed case, Unicode, and noise when the code reads those inputs. Reuse a fixture only when the test is about that fixture.
 
 Prefer extending an existing test file in the same package when it already covers the file or behavior under test. Create a new test file only when no existing file fits, the test belongs to a new production file, or the existing file would mix unrelated concerns. Do not create a new file for one test.
 Every test states its falsifier: the change that makes it fail. A test that cannot fail for the reason the criterion names is decorative, not evidence.
@@ -309,7 +313,7 @@ A handoff repair dispatch does not consume a review pass. It is a quick pass, no
 
 # Non-goals
 
-Do not add tests for every return, defensive guards, speculative interfaces, or unrelated cleanup. Do not add a dependency without approval. Do not expand scope without telling the user.
+Do not add tests for every return, every input another package accepts, defensive guards, speculative interfaces, or unrelated cleanup. Do not add a dependency without approval. Do not expand scope without telling the user.
 
 # Example
 

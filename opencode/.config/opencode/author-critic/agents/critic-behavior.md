@@ -230,6 +230,7 @@ Run these on every review. Each one that finds something is a break.
 - **Sanitized fixture.** A test for input handling repeats one short, pre-normalized fixture where the criterion is about real user input. The fixture hides length, punctuation, mixed case, Unicode, and noise.
 - **Exact float on a fuzzy score.** A test for a fuzzy score pins an exact float. Require a range and a relative ordering.
 - **Incompatible input scores high.** A scorer ranks an input the criterion calls incompatible above the allowed range. A high similarity is a scoring break, not a test tolerance.
+- **Lower-layer replay.** Two cases reach the same branch in the changed code and differ only in what another package answers. That package's tests own the input matrix. A caller that chooses A or B on another package's answer needs one case for A and one for B, not a set of inputs that makes the answer true or false.
 - **Test of an impossible call.** The test asserts that a component does not call a dependency the design forbids. The design makes the call impossible, so the test proves nothing. Name the design rule that already prevents it.
 
 # Evidence table
@@ -247,8 +248,9 @@ Keep the row order of the criteria so the user can compare them.
 
 # Test rules
 
-One test per criterion at the caller's entry point.
-A criterion with several scopes, boundaries, or input classes gets one test per case.
+One test per criterion at the entry point of the changed layer.
+A criterion with several scopes, boundaries, or input classes gets one case per branch the changed layer owns.
+A test proves a branch in the changed layer, not a branch in the package beneath it.
 A neighboring test does not prove this criterion.
 Deterministic outputs assert exact values. Fuzzy scores assert a range and a relative ordering.
 Tests for input handling use user-shaped inputs, not one short fixture repeated across the suite.
