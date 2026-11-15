@@ -139,8 +139,8 @@ def main() -> int:
 
     historian = magic.get("historian", {})
     check(
-        "historian inherits the session model",
-        "model" not in historian.get("opencode", {}),
+        "historian uses the dreamer model",
+        historian.get("opencode", {}).get("model") == DREAMER_MODEL,
         str(historian.get("opencode", {})),
     )
 
