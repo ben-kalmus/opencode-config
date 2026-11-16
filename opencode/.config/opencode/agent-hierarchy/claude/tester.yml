@@ -1,0 +1,11 @@
+name: tester
+description: Go test engineer. Owns test files. Verifies approved behavior with focused, economical tests.
+color: orange
+tools: Read, Grep, Glob, Edit, Write, Bash
+disallowedTools: Agent
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/allow-only-test-edit.sh"

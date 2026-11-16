@@ -1,6 +1,6 @@
 PACKAGES := opencode cortexkit
 
-.PHONY: all init stow unstow restow adopt clean backup verify claude-agents
+.PHONY: all init stow unstow restow adopt clean backup verify verify-deployed claude-agents sync-claude
 
 all: init stow
 
@@ -13,12 +13,13 @@ stow: backup
 		echo "Stowing $$pkg..."; \
 		stow -v -R -t $(HOME) --ignore 'service\.json' --ignore 'cli\.json' $$pkg; \
 	done
-	# special stage for CLAUDE.md (sync)
-	@echo "symlinked AGENTS.md ~ CLAUDE.md"
-	@ln -snf ~/repos/opencode-config/opencode/.config/opencode/AGENTS.md ~/.claude/CLAUDE.md
 
 verify:
 	@python3 test/verify.py
+	@python3 -B -m unittest discover -s test -p 'test_*.py' -v
+
+verify-deployed:
+	@python3 test/verify.py --deployed
 
 # Back up only genuine collisions: a real file standing under real directories.
 # Anything living under a symlink belongs to stow's subtree and is left alone.
@@ -89,5 +90,13 @@ CLAUDE_AGENTS_DIR ?= $(HOME)/.claude/agents
 OC := opencode/.config/opencode
 
 claude-agents:
-	@$(OC)/agent-hierarchy/scripts/build-claude-agents.sh $(CLAUDE_AGENTS_DIR)
-	@$(OC)/agent-hierarchy/scripts/build-claude-agents.sh $(CLAUDE_AGENTS_DIR) $(OC)/author-critic
+	@$(OC)/agent-hierarchy/scripts/build-claude-agents.sh "$(CLAUDE_AGENTS_DIR)"
+	@$(OC)/agent-hierarchy/scripts/build-claude-agents.sh "$(CLAUDE_AGENTS_DIR)" $(OC)/author-critic
+
+sync-claude: claude-agents
+	@set -eu; \
+		dst="$(CLAUDE_AGENTS_DIR)/../CLAUDE.md"; \
+		next=$$(mktemp "$$dst.XXXXXX"); \
+		cp "$(OC)/AGENTS.md" "$$next"; \
+		mv "$$next" "$$dst"; \
+		echo "wrote $$dst"

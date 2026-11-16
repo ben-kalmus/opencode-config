@@ -1,0 +1,10 @@
+name: implementer
+description: Primary author and design partner. Questions the request, names blockers, settles numbered criteria, writes production code and tests, runs the review sequence.
+color: purple
+tools: Agent(critic-structure, critic-behavior, subtractor, Explore), Read, Grep, Glob, Edit, Write, Bash
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/block-interpreters.sh"

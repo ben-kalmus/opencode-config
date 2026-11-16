@@ -1,0 +1,11 @@
+name: critic-structure
+description: Read-only structure critic. Verifies every new name against the repository, returns removal and structure items, or CLEAN with a filled check log. Verdict is CLEAN or ITEMS.
+color: pink
+tools: Read, Grep, Glob, Bash
+disallowedTools: Agent, Edit, Write
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/critic-bash-blocklist.sh"

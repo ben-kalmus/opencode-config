@@ -1,0 +1,11 @@
+name: auditor
+description: Read-only reviewer of correctness and maintenance cost. Requires evidence for blockers.
+color: yellow
+tools: Read, Grep, Glob, Bash
+disallowedTools: Agent, Edit, Write
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/auditor-bash-blocklist.sh"

@@ -20,14 +20,7 @@
     },
     // The dreamer runs in a child session, so it needs an explicit model.
     "opencode": {
-      "model": "openrouter/deepseek/deepseek-v4.1-flash",
-    },
-  },
-  // The historian also runs in a child session. Without a model it inherits the
-  // session model, which fails on the free tier.
-  "historian": {
-    "opencode": {
-      "model": "openrouter/deepseek/deepseek-v4.1-flash",
+      "model": "github-copilot/gpt-6.1-sol",
     },
   },
 }

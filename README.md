@@ -46,7 +46,15 @@ Already configured:
 - [Magic Context](https://github.com/cortexkit/magic-context): background context management and cross-session project memory. Native compaction is off. The config lives in `cortexkit/.config/cortexkit/magic-context.jsonc` and is deployed by `make stow`.
 - [opencode-handoff](https://github.com/joshuadavidthomas/opencode-handoff): `/handoff <goal>` starts a focused new session with a summary and a file working set.
 
-`make stow` deploys both the `opencode` and `cortexkit` packages. Run `make verify` after `make stow` to check the deployed config.
+Run `make verify` to check the checkout without changing the live config. `make stow` deploys both the `opencode` and `cortexkit` packages. Run `make verify-deployed` after deployment to check the links and loaded plugins.
+
+The historian inherits the active session model. The dreamer uses `github-copilot/gpt-6.1-sol` with the weekly, nightly, and monthly schedules in the Magic Context config.
+
+## Claude Code sync
+
+Run `make sync-claude` to copy the shared instructions and generate all eight Claude agents in `~/.claude`. The command replaces `CLAUDE.md` with a regular file, including when the existing file is a symlink. Claude agents use Claude frontmatter and refer to `~/.claude/CLAUDE.md`.
+
+The sync leaves settings, hook scripts, and Git's index untouched. Review and commit the changes separately in the Claude repository. `make stow` does not update Claude files. Override `CLAUDE_AGENTS_DIR` to generate into a different directory.
 
 Consider [superpowers](https://github.com/obra/superpowers). A set of skills to guide development, careful planning, incorporating best practices and without making the same mistakes.
 Navigate to [this page](https://github.com/obra/superpowers/blob/main/docs/README.opencode.md)
@@ -115,4 +123,3 @@ loginctl enable-linger $(whoami)
 systemctl --user status opencode-telegram
 journalctl --user -u opencode-telegram -f
 ```
-

@@ -1,0 +1,11 @@
+name: producer
+description: Implementation agent. Owns production files. Finds the smallest coherent solution using existing code.
+color: green
+tools: Read, Grep, Glob, Edit, Write, Bash
+disallowedTools: Agent
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/deny-test-edit.sh"

@@ -1,0 +1,11 @@
+name: critic-behavior
+description: Read-only behavior critic. Re-derives the criteria, verifies every evidence row against the code and a test run, returns a verdict.
+color: yellow
+tools: Read, Grep, Glob, Bash
+disallowedTools: Agent, Edit, Write
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/critic-bash-blocklist.sh"

@@ -1,0 +1,4 @@
+name: coordinator
+description: Producer-first workflow coordinator. Delegates implementation, tests, and review. Requires auditor approval.
+color: green
+tools: Agent(producer, tester, auditor, Explore), Read, Grep, Glob, Edit, Write, Bash

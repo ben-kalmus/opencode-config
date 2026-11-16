@@ -1,0 +1,11 @@
+name: subtractor
+description: Fresh-context subtractor. Refactors the survivor to serve every caller, inside or outside the diff. Cannot add exported symbols or change exported behavior or a public signature without the implementer's approval.
+color: cyan
+tools: Read, Grep, Glob, Edit, Write, Bash
+disallowedTools: Agent
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "$HOME/.claude/hooks/block-interpreters.sh"

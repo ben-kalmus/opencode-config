@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Verify the deployed Magic Context setup."""
+"""Verify the checkout or deployed Magic Context setup."""
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import subprocess
@@ -18,7 +19,7 @@ DEPLOYED_CONFIG = HOME / ".config/cortexkit/magic-context.jsonc"
 REPO_DCP_CONFIG = REPO / "opencode/.config/opencode/dcp.jsonc"
 HOME_DCP_CONFIG = HOME / ".config/opencode/dcp.jsonc"
 
-DREAMER_MODEL = "openrouter/deepseek/deepseek-v4.1-flash"
+DREAMER_MODEL = "github-copilot/gpt-6.1-sol"
 MAGIC_CONTEXT_PLUGIN = "@cortexkit/opencode-magic-context"
 HANDOFF_PLUGIN = "opencode-handoff"
 DCP_PLUGIN = "@tarquinen/opencode-dcp"
@@ -79,20 +80,24 @@ def plugin_names(config: dict) -> list[str]:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--deployed", action="store_true", help="also check live links and plugins")
+    args = parser.parse_args()
     results: list[tuple[str, bool, str]] = []
 
     def check(name: str, ok: bool, detail: str = "") -> None:
         results.append((name, ok, detail))
 
-    check(
-        "deployed config resolves into the repo",
-        DEPLOYED_CONFIG.exists() and DEPLOYED_CONFIG.resolve() == MAGIC_CONTEXT_CONFIG.resolve(),
-        f"{DEPLOYED_CONFIG} -> {DEPLOYED_CONFIG.resolve()}",
-    )
+    if args.deployed:
+        check(
+            "deployed config resolves into the repo",
+            DEPLOYED_CONFIG.exists() and DEPLOYED_CONFIG.resolve() == MAGIC_CONTEXT_CONFIG.resolve(),
+            f"{DEPLOYED_CONFIG} -> {DEPLOYED_CONFIG.resolve()}",
+        )
 
     try:
         opencode = load_jsonc(OPENCODE_CONFIG)
-        magic = load_jsonc(DEPLOYED_CONFIG)
+        magic = load_jsonc(MAGIC_CONTEXT_CONFIG)
     except (OSError, ValueError) as error:
         print(f"FAIL could not load config: {error}")
         return 1
@@ -139,8 +144,8 @@ def main() -> int:
 
     historian = magic.get("historian", {})
     check(
-        "historian uses the dreamer model",
-        historian.get("opencode", {}).get("model") == DREAMER_MODEL,
+        "historian has no model or fallback override",
+        historian.get("opencode", {}) == {},
         str(historian.get("opencode", {})),
     )
 
@@ -152,19 +157,23 @@ def main() -> int:
     )
     check(
         f"dreamer model is {DREAMER_MODEL}",
-        dreamer.get("opencode", {}).get("model") == DREAMER_MODEL,
+        dreamer.get("opencode", {}) == {"model": DREAMER_MODEL},
         str(dreamer.get("opencode", {})),
+    )
+    check(
+        "dreamer keeps the reduced upstream schedule",
+        dreamer.get("tasks") == {
+            "map-memories": {"schedule": "0 2 * * 0"},
+            "verify": {"schedule": "0 3 * * *"},
+            "verify-broad": {"schedule": "0 4 1 * *"},
+        },
+        str(dreamer.get("tasks")),
     )
 
     check(
         "repo dcp config is gone",
         not REPO_DCP_CONFIG.exists(),
         str(REPO_DCP_CONFIG),
-    )
-    check(
-        "home dcp config is gone",
-        not HOME_DCP_CONFIG.exists(),
-        str(HOME_DCP_CONFIG),
     )
 
     readme = (REPO / "README.md").read_text(encoding="utf-8").lower()
@@ -175,24 +184,30 @@ def main() -> int:
         "README or Makefile still mentions dcp",
     )
 
-    try:
-        listed = subprocess.run(
-            ["opencode", "plugin", "list"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        output = f"{listed.stdout}\n{listed.stderr}".lower()
+    if args.deployed:
         check(
-            "opencode plugin list shows the new plugins",
-            listed.returncode == 0
-            and "magic-context" in output
-            and "handoff" in output
-            and "opencode-dcp" not in output,
-            output.strip(),
+            "home dcp config is gone",
+            not HOME_DCP_CONFIG.exists(),
+            str(HOME_DCP_CONFIG),
         )
-    except FileNotFoundError:
-        check("opencode plugin list shows the new plugins", False, "opencode binary not found")
+        try:
+            listed = subprocess.run(
+                ["opencode", "plugin", "list"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            output = f"{listed.stdout}\n{listed.stderr}".lower()
+            check(
+                "opencode plugin list shows the new plugins",
+                listed.returncode == 0
+                and "magic-context" in output
+                and "handoff" in output
+                and "opencode-dcp" not in output,
+                output.strip(),
+            )
+        except FileNotFoundError:
+            check("opencode plugin list shows the new plugins", False, "opencode binary not found")
 
     failed = 0
     for name, ok, detail in results:

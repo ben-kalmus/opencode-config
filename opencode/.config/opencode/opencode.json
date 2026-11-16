@@ -65,8 +65,12 @@
   },
 
 
+  "compaction": {
+    "auto": false,
+  },
   "plugins": [
-    "@tarquinen/opencode-dcp@latest",
+    "@cortexkit/opencode-magic-context@latest",
+    "opencode-handoff",
   ],
   "providers": {
     "enablers": {
